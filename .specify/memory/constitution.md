@@ -1,33 +1,32 @@
 <!--
 Sync Impact Report - Constitution Update
 ═══════════════════════════════════════════════════════════════════════════════
-Version Change: N/A (initial) → 1.0.0
-Rationale: Initial constitution establishing foundational governance principles
+Version Change: 1.0.0 → 1.1.0
+Rationale: MINOR version bump - Added new principle for documentation language requirements
 
 Modified Principles:
-  - N/A (initial creation)
+  - N/A
 
 Added Sections:
-  - I. Code Quality Standards (NON-NEGOTIABLE)
-  - II. Testing Standards (NON-NEGOTIABLE)
-  - III. User Experience Consistency
-  - IV. Performance Requirements
-  - Performance Standards (detailed metrics and monitoring)
-  - Quality Assurance Process (gates and reviews)
+  - V. Documentation Language Standards (NON-NEGOTIABLE)
 
 Removed Sections:
   - N/A
 
 Templates Requiring Updates:
-  ✅ plan-template.md - Constitution Check section already aligned
-  ✅ spec-template.md - Acceptance scenarios and requirements align with UX/testing
-  ✅ tasks-template.md - Task phases support test-first and quality gates
-  ⚠ All command files in .github/prompts/ - Should be reviewed for principle references
+  ✅ plan-template.md - No changes needed (language-agnostic structure)
+  ✅ spec-template.md - No changes needed (language-agnostic structure)
+  ✅ tasks-template.md - No changes needed (language-agnostic structure)
+  ⚠ All command files in .github/prompts/ - Should enforce zh-TW in generated output
+  ⚠ Template files - Should be updated to include zh-TW examples or notes
 
 Follow-up TODOs:
-  - None (all placeholders filled)
+  - Update command prompt files to enforce Traditional Chinese output
+  - Consider adding zh-TW examples to template comments
+  - Update any existing English documentation to Traditional Chinese
 
 Generated: 2025-10-30
+Previous Update: 2025-10-30 (v1.0.0 - Initial constitution)
 ═══════════════════════════════════════════════════════════════════════════════
 -->
 
@@ -98,6 +97,24 @@ System performance directly impacts user satisfaction and operational costs:
 - **Performance Testing**: Load testing required for all endpoints expected to handle >100 requests/second or serve >1000 concurrent users.
 
 **Rationale**: Performance is a feature, not an afterthought. Slow systems frustrate users and increase operational costs. Early performance testing prevents expensive rewrites.
+
+### V. Documentation Language Standards (NON-NEGOTIABLE)
+
+All project documentation intended for specification, planning, and end-user consumption MUST be written in Traditional Chinese (zh-TW):
+
+- **Specifications (spec.md)**: All feature specifications, user stories, acceptance criteria, and requirements MUST be written in Traditional Chinese.
+- **Implementation Plans (plan.md)**: All technical context, architecture decisions, and implementation plans MUST be written in Traditional Chinese.
+- **User-Facing Documentation**: All user guides, quickstart documents, API documentation, and help content MUST be written in Traditional Chinese.
+- **Task Descriptions (tasks.md)**: All task lists, descriptions, and acceptance criteria MUST be written in Traditional Chinese.
+- **Code Comments (User-Facing)**: Comments intended for end-users or documentation generation MUST be in Traditional Chinese.
+- **Error Messages**: All user-facing error messages, warnings, and notifications MUST be in Traditional Chinese.
+- **Exceptions for Code**:
+  - Source code (variable names, function names, class names) MAY use English for technical clarity and international collaboration.
+  - Internal technical comments explaining implementation details MAY use English.
+  - Third-party library documentation references MAY remain in original language.
+  - Git commit messages MAY use English for international team coordination.
+
+**Rationale**: Consistent use of Traditional Chinese ensures accessibility for the primary user base, reduces translation errors, and maintains cultural and linguistic appropriateness. Clear language boundaries between code (technical/English) and documentation (user-focused/Traditional Chinese) prevent confusion while maintaining international development standards.
 
 ## Performance Standards
 
@@ -177,4 +194,4 @@ This constitution supersedes all other development practices and policies. All t
 - Amendments reflect lessons learned and evolving project needs.
 - All team members contribute to keeping principles practical and relevant.
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-30 | **Last Amended**: 2025-10-30
+**Version**: 1.1.0 | **Ratified**: 2025-10-30 | **Last Amended**: 2025-10-30
