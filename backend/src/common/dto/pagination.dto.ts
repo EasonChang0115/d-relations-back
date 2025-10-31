@@ -1,0 +1,40 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, Max, Min } from 'class-validator';
+
+export class PaginationDto {
+  @ApiPropertyOptional({ minimum: 1, default: 1, description: '頁碼' })
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  page?: number = 1;
+
+  @ApiPropertyOptional({ minimum: 1, maximum: 100, default: 10, description: '每頁筆數' })
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  @IsOptional()
+  limit?: number = 10;
+}
+
+export class PaginationMetaDto {
+  @ApiPropertyOptional({ description: '當前頁碼' })
+  page: number;
+
+  @ApiPropertyOptional({ description: '每頁筆數' })
+  limit: number;
+
+  @ApiPropertyOptional({ description: '總筆數' })
+  totalItems: number;
+
+  @ApiPropertyOptional({ description: '總頁數' })
+  totalPages: number;
+
+  @ApiPropertyOptional({ description: '是否有下一頁' })
+  hasNextPage: boolean;
+
+  @ApiPropertyOptional({ description: '是否有上一頁' })
+  hasPreviousPage: boolean;
+}

@@ -103,15 +103,38 @@
 - [x] T007: 建立 Dockerfile
 - [x] T008: package.json 已更新 (需執行 npm install)
 
-### ⏳ Phase 3: 基礎建設 (Foundational)
-**狀態**: 待開始
+### ✅ Phase 3: 基礎建設 (Foundational)
+**狀態**: 已完成
 **任務**: T009-T027
-**關鍵任務**:
-- 資料庫與 ORM 設定
-- 認證與授權框架
-- API 架構與中間件
-- 外部服務配置
-- 應用程式主模組
+**已完成**:
+- [x] T009: TypeORM 配置 (database.config.ts, data-source.ts)
+- [x] T010: 資料庫遷移架構 (migrations/, migration scripts)
+- [x] T011: JWT 配置 (jwt.config.ts)
+- [x] T012: JWT 策略 (jwt.strategy.ts)
+- [x] T013: JWT 認證守衛 (jwt-auth.guard.ts)
+- [x] T014: 角色守衛 (roles.guard.ts)
+- [x] T015: 自訂裝飾器 (current-user, roles, public)
+- [x] T016: 全域例外過濾器 (http-exception.filter.ts)
+- [x] T017: 轉換攔截器 (transform.interceptor.ts)
+- [x] T018: 日誌攔截器 (logging.interceptor.ts)
+- [x] T019: 全域驗證管道設定 (已整合於 app.module.ts)
+- [x] T020: 共用 DTO (pagination, response, error-response)
+- [x] T021: AWS S3 配置 (aws.config.ts)
+- [x] T022: 郵件服務配置 (mail.config.ts)
+- [x] T023: Stripe 配置 (stripe.config.ts)
+- [x] T024: Redis 配置 (redis.config.ts)
+- [x] T025: App Module 整合 (app.module.ts)
+- [x] T026: App Controller with Health Check (app.controller.ts)
+- [x] T027: Main 進入點 (main.ts with Swagger, CORS)
+
+**額外完成**:
+- BaseEntity 抽象類別
+- Pagination 工具類別和介面  
+- 常數定義 (ExamType, ExamStatus, ExamVersion, EXAM_CONFIG)
+- ParseInt 自訂 Pipe
+- Auth Module 建立
+
+**檔案統計**: 29 個 TypeScript 檔案已建立
 
 ### 🎯 Phase 4-8: 使用者故事實作
 **狀態**: 待開始
