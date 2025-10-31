@@ -1,0 +1,1207 @@
+openapi: 3.0.3
+info:
+  title: 醫學細胞識別能力測驗平台 API
+  description: |
+    提供線上醫學檢測能力測驗，包含免費版與付費版，支援 OTP 郵件驗證、
+    隨機出題、結果報表、付款整合及團體測驗功能。
+  version: 1.0.0
+  contact:
+    name: D-relations
+    url: https://d-relations.com
+  license:
+    name: Proprietary
+
+servers:
+- url: http://localhost:3000/api
+  description: 開發環境
+- url: https://staging-api.example.com/api
+  description: 測試環境
+- url: https://api.example.com/api
+  description: 生產環境
+
+tags:
+- name: Auth
+  description: 身份驗證相關 API
+- name: Users
+  description: 使用者資訊管理
+- name: OTP
+  description: OTP 驗證碼相關
+- name: Exams
+  description: 測驗管理
+- name: Questions
+  description: 題目管理（管理員）
+- name: Answers
+  description: 答案提交與查詢
+- name: Reports
+  description: 結果報表
+- name: Payments
+  description: 付款處理
+- name: Groups
+  description: 團體測驗管理
+- name: Health
+  description: 系統健康檢查
+
+paths:
+  # ==================== Health Check ====================
+  /health:
+    get:
+      tags: [ Health ]
+      summary: 健康檢查
+      description: 檢查 API 伺服器狀態
+      operationId: healthCheck
+      responses:
+        '200':
+          description: 伺服器正常運行
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime:
+                    type: number
+                    description: 伺服器運行時間（秒）
+
+  # ==================== Auth ====================
+  /auth/register:
+    post:
+      tags: [ Auth ]
+      summary: 使用者註冊
+      description: 註冊新使用者帳號（用於付費版測驗）
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+      responses:
+        '201':
+          description: 註冊成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email 已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== Users ====================
+  /users/profile:
+    get:
+      tags: [ Users ]
+      summary: 取得個人資料
+      description: 取得當前登入使用者的個人資料
+      operationId: getProfile
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: 成功取得個人資料
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [ Users ]
+      summary: 更新個人資料
+      description: 更新當前登入使用者的個人資料
+      operationId: updateProfile
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== OTP ====================
+  /otp/send:
+    post:
+      tags: [ OTP ]
+      summary: 發送 OTP 驗證碼
+      description: 發送 6 位數 OTP 驗證碼至指定 Email
+      operationId: sendOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ email, purpose ]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: 接收 OTP 的 Email
+                purpose:
+                  type: string
+                  enum: [ exam_access, admin_access ]
+                  description: 驗證目的
+                exam_token:
+                  type: string
+                  description: 測驗連結 Token（exam_access 用）
+                batch_token:
+                  type: string
+                  description: 管理頁面 Token（admin_access 用）
+      responses:
+        '200':
+          description: OTP 已發送
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        otp_id:
+                          type: string
+                          format: uuid
+                        expires_at:
+                          type: string
+                          format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          description: 速率限制（60 秒內已發送）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /otp/verify:
+    post:
+      tags: [ OTP ]
+      summary: 驗證 OTP
+      description: 驗證 OTP 驗證碼是否正確
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ otp_id, otp_code ]
+              properties:
+                otp_id:
+                  type: string
+                  format: uuid
+                  description: OTP 記錄 ID
+                otp_code:
+                  type: string
+                  pattern: '^\d{6}$'
+                  description: 6 位數驗證碼
+      responses:
+        '200':
+          description: 驗證成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        access_token:
+                          type: string
+                          description: JWT Access Token
+                        refresh_token:
+                          type: string
+                          description: JWT Refresh Token
+        '400':
+          description: 驗證碼錯誤或已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: 嘗試次數過多，已鎖定 5 分鐘
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== Exams ====================
+  /exams/start:
+    post:
+      tags: [ Exams ]
+      summary: 開始測驗
+      description: 建立新的測驗實例（免費版或付費版已驗證）
+      operationId: startExam
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ exam_type, version ]
+              properties:
+                exam_type:
+                  type: string
+                  enum: [ peripheral_blood, bone_marrow ]
+                  description: 測驗類型
+                version:
+                  type: string
+                  enum: [ free, paid_individual, paid_group ]
+                  description: 測驗版本
+                access_token:
+                  type: string
+                  description: 測驗連結 Token（付費版必填）
+      responses:
+        '201':
+          description: 測驗已建立
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/ExamResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 測驗已開始或已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /exams/{exam_id}/questions:
+    get:
+      tags: [ Exams ]
+      summary: 取得測驗題目清單
+      description: 取得測驗的所有題目（不含答案）
+      operationId: getExamQuestions
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: exam_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功取得題目清單
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        exam_id:
+                          type: string
+                          format: uuid
+                        total_questions:
+                          type: integer
+                        current_index:
+                          type: integer
+                        questions:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/QuestionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /exams/{exam_id}/current:
+    get:
+      tags: [ Exams ]
+      summary: 取得當前題目
+      description: 取得測驗的當前題目（一問一答模式）
+      operationId: getCurrentQuestion
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: exam_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功取得當前題目
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/CurrentQuestionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /exams/{exam_id}/progress:
+    get:
+      tags: [ Exams ]
+      summary: 取得測驗進度
+      description: 取得測驗的答題進度
+      operationId: getExamProgress
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: exam_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功取得進度
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        exam_id:
+                          type: string
+                          format: uuid
+                        total_questions:
+                          type: integer
+                        answered_count:
+                          type: integer
+                        current_index:
+                          type: integer
+                        status:
+                          type: string
+                          enum: [ pending, verified, in_progress, completed, expired ]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== Answers ====================
+  /answers/submit:
+    post:
+      tags: [ Answers ]
+      summary: 提交答案
+      description: 提交當前題目的答案
+      operationId: submitAnswer
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ exam_id, question_order, answer ]
+              properties:
+                exam_id:
+                  type: string
+                  format: uuid
+                question_order:
+                  type: integer
+                  minimum: 1
+                  description: 題號（1-based）
+                answer:
+                  type: string
+                  description: 使用者選擇的答案
+                is_skipped:
+                  type: boolean
+                  default: false
+                  description: 是否跳過
+      responses:
+        '201':
+          description: 答案已提交
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        is_correct:
+                          type: boolean
+                        next_question_order:
+                          type: integer
+                          nullable: true
+                          description: 下一題題號（null 表示已完成）
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 測驗已完成或題目已作答
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /answers/exam/{exam_id}:
+    get:
+      tags: [ Answers ]
+      summary: 取得測驗所有答案
+      description: 取得指定測驗的所有答案記錄
+      operationId: getExamAnswers
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: exam_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功取得答案記錄
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/AnswerRecordResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== Reports ====================
+  /reports/{exam_id}:
+    get:
+      tags: [ Reports ]
+      summary: 取得測驗結果報表
+      description: 取得測驗完成後的結果報表
+      operationId: getReport
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: exam_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功取得報表
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/ReportResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 報表已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /reports/{exam_id}/pdf:
+    get:
+      tags: [ Reports ]
+      summary: 下載 PDF 報表
+      description: 生成並下載 PDF 格式的測驗結果報表
+      operationId: downloadPdfReport
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: exam_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: PDF 生成成功
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '202':
+          description: PDF 生成中（返回任務 ID）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [ processing ]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 報表已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /reports/pdf-status/{job_id}:
+    get:
+      tags: [ Reports ]
+      summary: 查詢 PDF 生成狀態
+      description: 查詢 PDF 報表生成任務的狀態
+      operationId: getPdfStatus
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 任務狀態
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ processing, completed, failed ]
+                  pdf_url:
+                    type: string
+                    description: PDF 下載連結（completed 時）
+                  error:
+                    type: string
+                    description: 錯誤訊息（failed 時）
+
+  # ==================== Payments ====================
+  /payments/create-checkout:
+    post:
+      tags: [ Payments ]
+      summary: 建立 Stripe Checkout Session
+      description: 建立 Stripe 付款頁面 Session
+      operationId: createCheckoutSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ payment_type, exam_type ]
+              properties:
+                payment_type:
+                  type: string
+                  enum: [ individual_exam, group_exam ]
+                exam_type:
+                  type: string
+                  enum: [ peripheral_blood, bone_marrow ]
+                quantity:
+                  type: integer
+                  minimum: 1
+                  default: 1
+                  description: 購買數量（團體測驗用）
+                user_info:
+                  $ref: '#/components/schemas/RegisterDto'
+      responses:
+        '201':
+          description: Checkout Session 已建立
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        session_id:
+                          type: string
+                        checkout_url:
+                          type: string
+                          format: uri
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /payments/webhook:
+    post:
+      tags: [ Payments ]
+      summary: Stripe Webhook
+      description: 接收 Stripe 付款事件
+      operationId: handleStripeWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Stripe Event Object
+      responses:
+        '200':
+          description: Webhook 已接收
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+
+  # ==================== Groups ====================
+  /groups/batches:
+    post:
+      tags: [ Groups ]
+      summary: 建立團體測驗批次
+      description: 付款成功後自動建立（內部 API）
+      operationId: createGroupBatch
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ admin_id, exam_type, quantity ]
+              properties:
+                admin_id:
+                  type: string
+                  format: uuid
+                exam_type:
+                  type: string
+                  enum: [ peripheral_blood, bone_marrow ]
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        '201':
+          description: 批次已建立
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/GroupBatchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /groups/batches/{batch_id}:
+    get:
+      tags: [ Groups ]
+      summary: 取得團體測驗批次資訊
+      description: 管理者查看批次資訊（管理後台）
+      operationId: getGroupBatch
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: batch_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功取得批次資訊
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/GroupBatchDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 管理頁面已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /groups/batches/{batch_id}/configure:
+    post:
+      tags: [ Groups ]
+      summary: 配布者設定
+      description: 管理者設定受測者清單並發送測驗連結
+      operationId: configureBatch
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: batch_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ takers ]
+              properties:
+                takers:
+                  type: array
+                  items:
+                    type: object
+                    required: [ name, email ]
+                    properties:
+                      name:
+                        type: string
+                      email:
+                        type: string
+                        format: email
+      responses:
+        '200':
+          description: 配布者設定完成，測驗連結已發送
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 批次已配布或已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+# ==================== Components ====================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ========== Common ==========
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        statusCode:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: 操作成功
+        data:
+          type: object
+          description: 回應資料（依端點而異）
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: 請求參數錯誤
+        error:
+          type: string
+          example: BadRequestException
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+          example: /api/exams/start
+
+    # ========== Auth / Users ==========
+    RegisterDto:
+      type: object
+      required: [ name, email ]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: 王小明
+        email:
+          type: string
+          format: email
+          example: wang@example.com
+        organization_code:
+          type: string
+          maxLength: 50
+          example: ORG-001
+        job_title:
+          type: string
+          maxLength: 100
+          example: 臨床檢驗師
+        certification_status:
+          type: string
+          enum: [ certified, not_certified, in_progress ]
+          example: certified
+        additional_info:
+          type: string
+          example: 額外資訊
+
+    UpdateUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        organization_code:
+          type: string
+          maxLength: 50
+        job_title:
+          type: string
+          maxLength: 100
+        certification_status:
+          type: string
+          enum: [ certified, not_certified, in_progress ]
+        additional_info:
+          type: string
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [ free_user, paid_user, group_admin, group_taker ]
+        organization_code:
+          type: string
+        job_title:
+          type: string
+        certification_status:
+          type: string
+          enum: [ certified, not_certified, in_progress ]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    # ========== Exams ==========
+    ExamResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        exam_type:
+          type: string
+          enum: [ peripheral_blood, bone_marrow ]
+        version:
+          type: string
+          enum: [ free, paid_individual, paid_group ]
+        status:
+          type: string
+          enum: [ pending, verified, in_progress, completed, expired ]
+        total_questions:
+          type: integer
+        current_index:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    QuestionResponse:
+      type: object
+      properties:
+        order:
+          type: integer
+        image_url:
+          type: string
+          format: uri
+        options:
+          type: array
+          items:
+            type: string
+          description: 下拉選單選項（所有可能的細胞名稱）
+
+    CurrentQuestionResponse:
+      type: object
+      properties:
+        exam_id:
+          type: string
+          format: uuid
+        question_order:
+          type: integer
+        image_url:
+          type: string
+          format: uri
+        options:
+          type: array
+          items:
+            type: string
+        total_questions:
+          type: integer
+        answered_count:
+          type: integer
+
+    # ========== Answers ==========
+    AnswerRecordResponse:
+      type: object
+      properties:
+        question_order:
+          type: integer
+        image_url:
+          type: string
+          format: uri
+        user_answer:
+          type: string
+        is_correct:
+          type: boolean
+        is_skipped:
+          type: boolean
+        answered_at:
+          type: string
+          format: date-time
+
+    # ========== Reports ==========
+    ReportResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        exam_id:
+          type: string
+          format: uuid
+        accuracy_rate:
+          type: number
+          format: float
+          description: 正答率（%）
+        total_questions:
+          type: integer
+        correct_count:
+          type: integer
+        incorrect_count:
+          type: integer
+        skipped_count:
+          type: integer
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerRecordResponse'
+        statistics:
+          type: array
+          items:
+            type: object
+            properties:
+              question_order:
+                type: integer
+              answer_distribution:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answer:
+                      type: string
+                    count:
+                      type: integer
+                    percentage:
+                      type: number
+          description: 統計資訊（付費版）
+        recommended_courses:
+          type: string
+          description: 推薦講座（付費版）
+        pdf_url:
+          type: string
+          format: uri
+          description: PDF 下載連結
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    # ========== Groups ==========
+    GroupBatchResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        exam_type:
+          type: string
+          enum: [ peripheral_blood, bone_marrow ]
+        purchased_quantity:
+          type: integer
+        status:
+          type: string
+          enum: [ pending, configured, in_progress, completed, expired ]
+        admin_access_url:
+          type: string
+          format: uri
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    GroupBatchDetailResponse:
+      allOf:
+      - $ref: '#/components/schemas/GroupBatchResponse'
+      - type: object
+        properties:
+          takers:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                exam_status:
+                  type: string
+                  enum: [ pending, in_progress, completed ]
+                accuracy_rate:
+                  type: number
+                  nullable: true
+                completed_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+          overall_accuracy:
+            type: number
+            description: 團體整體正答率（%）
+            nullable: true
+
+  responses:
+    BadRequest:
+      description: 請求參數錯誤
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: 未授權（需要登入或 Token 無效）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: 權限不足
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: 資源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    TooManyRequests:
+      description: 速率限制
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+security:
+- bearerAuth: []

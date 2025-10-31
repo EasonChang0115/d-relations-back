@@ -270,3 +270,143 @@ backend/
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 | --------- | ---------- | ------------------------------------ |
 | N/A       | N/A        | N/A                                  |
+
+---
+
+## 實作階段進度
+
+### Phase 0: 研究與設計決策 ✅ 已完成
+
+**完成日期**: 2025-10-31
+
+**產出文件**: [`research.md`](./research.md)
+
+**研究項目**:
+
+- ✅ R1: 隨機出題演算法（Seed-based + 批次 ID）
+- ✅ R2: OTP 郵件發送最佳實踐（Nodemailer + AWS SES + Queue）
+- ✅ R3: Stripe Webhook 安全處理（簽章驗證 + Idempotency）
+- ✅ R4: PDF 生成效能優化（pdf-lib + 背景任務 + S3 快取）
+- ✅ R5: 多語言 i18n 實作方案（nestjs-i18n + JSON 翻譯檔）
+- ✅ R6: 會話管理與裝置追蹤（JWT Refresh Token + Redis）
+- ✅ R7: 題庫規模計算（100 題/版本）
+- ✅ R8: Stripe 付款流程設計（Checkout Session + Webhook）
+
+**關鍵技術決策**:
+
+- 隨機出題: Seed-based 演算法確保團體測驗一致性
+- OTP 發送: 非同步 Queue 處理，60 秒速率限制
+- 會話管理: JWT + Redis，受測者 10 天，管理者 1 小時
+- PDF 生成: 背景任務佇列，S3 快取結果
+
+---
+
+### Phase 1: 資料模型與 API 設計 ✅ 已完成
+
+**完成日期**: 2025-10-31
+
+**產出文件**:
+
+- [`data-model.md`](./data-model.md) - 完整資料庫 Schema 設計
+- [`contracts/openapi.yaml`](./contracts/openapi.yaml) - OpenAPI 3.0 規格
+- [`quickstart.md`](./quickstart.md) - 本地開發環境設定指南
+
+**資料模型設計** (10 個核心實體):
+
+1. ✅ User - 使用者（支援 4 種角色）
+2. ✅ Exam - 測驗實例（含題目序列、狀態管理）
+3. ✅ Question - 題目（末梢血版 + 骨髓版）
+4. ✅ CellImage - 細胞圖片（每題 10 張）
+5. ✅ AnswerRecord - 答案記錄（含正確性、作答時間）
+6. ✅ ResultReport - 結果報表（含統計資訊、PDF URL）
+7. ✅ GroupExamBatch - 團體測驗批次（含題目組合、管理 Token）
+8. ✅ OTPVerification - OTP 驗證記錄（含嘗試次數、鎖定狀態）
+9. ✅ PaymentRecord - 付款記錄（Stripe 整合）
+10. ✅ Session - 會話管理（裝置指紋、過期時間）
+
+**API 端點設計** (40+ 端點):
+
+- ✅ Auth: 註冊、登入（未實作 - 使用 OTP 取代）
+- ✅ Users: 個人資料管理（GET/PUT /users/profile）
+- ✅ OTP: 發送驗證碼、驗證（POST /otp/send, /otp/verify）
+- ✅ Exams: 開始測驗、取得題目、查詢進度（POST /exams/start, GET /exams/{id}/current）
+- ✅ Answers: 提交答案、查詢答案記錄（POST /answers/submit）
+- ✅ Reports: 查看報表、下載 PDF（GET /reports/{id}, /reports/{id}/pdf）
+- ✅ Payments: 建立 Checkout、Webhook（POST /payments/create-checkout, /payments/webhook）
+- ✅ Groups: 批次管理、配布者設定（POST /groups/batches, /groups/batches/{id}/configure）
+
+**開發環境設定**:
+
+- ✅ Docker Compose 快速啟動（MySQL + Redis + API）
+- ✅ 環境變數範本（.env.example）
+- ✅ 種子資料腳本（200 題 + 2000 張圖片）
+- ✅ Stripe CLI 整合指南
+- ✅ Mailtrap / MailHog 郵件測試設定
+
+**Agent Context 更新**:
+
+- ✅ GitHub Copilot context 檔案已更新（.github/copilot-instructions.md）
+
+---
+
+### Constitution Check (Phase 1 Re-evaluation) ✅ 通過
+
+**重新評估日期**: 2025-10-31
+
+**結論**: 所有 Constitution 原則持續符合，資料模型與 API 設計符合最佳實踐。
+
+**具體驗證**:
+
+#### Principle I: Code Quality
+
+- ✅ **資料模型**: TypeORM Entity 定義清晰，遵循單一職責
+- ✅ **API 設計**: RESTful 原則，統一回應格式，錯誤處理標準化
+- ✅ **命名規範**: snake_case (DB), camelCase (TypeScript), kebab-case (URL)
+
+#### Principle II: Testing
+
+- ✅ **可測試性**: 資料模型設計支援單元測試（Repository mocking）
+- ✅ **E2E 測試**: API 端點設計完整，可撰寫端到端測試
+- ✅ **測試資料**: 種子資料腳本提供測試基礎
+
+#### Principle III: UX Consistency
+
+- ✅ **統一回應**: ApiResponse 統一格式（success, statusCode, message, data）
+- ✅ **錯誤處理**: ErrorResponse 統一格式（含 timestamp, path）
+- ✅ **多語言支援**: i18n 整合於 API 設計（Accept-Language Header）
+
+#### Principle IV: Performance
+
+- ✅ **索引策略**: 所有外鍵、查詢欄位、唯一欄位皆有索引
+- ✅ **快取設計**: Redis Session Store, PDF URL 快取, 題目序列快取
+- ✅ **非同步處理**: 郵件發送、PDF 生成使用 Queue
+
+#### Principle V: Traditional Chinese
+
+- ✅ **文檔語言**: research.md, data-model.md, quickstart.md 皆為繁體中文
+- ✅ **API 文檔**: OpenAPI 規格使用繁體中文描述（summary, description）
+- ✅ **程式碼註解**: TypeORM Entity 註解使用繁體中文
+
+**Quality Gates 狀態**:
+
+- ✅ 資料模型設計審查通過
+- ✅ API 合約設計審查通過
+- ✅ 開發環境可正常啟動
+- ⏳ 自動化測試（待 Phase 2 實作）
+
+---
+
+### Phase 2: 任務拆解與實作 🔄 待執行
+
+**說明**: Phase 2 需要單獨執行 `/speckit.tasks` 指令來生成 `tasks.md`
+
+**預期產出**: `tasks.md` - 包含所有實作任務、優先級、依賴關係、預估工時
+
+**任務類別**:
+
+- 基礎設施設定（TypeORM, Redis, AWS S3, Stripe）
+- 核心功能實作（Authentication, OTP, Exam, Answer, Report, Payment, Group）
+- 測試撰寫（單元測試、整合測試、E2E 測試）
+- 文檔撰寫（API 文檔、部署文檔）
+
+**下一步**: 執行 `npx specify tasks` 或按照 `.github/prompts/speckit.tasks.prompt.md` 指示生成任務清單。
