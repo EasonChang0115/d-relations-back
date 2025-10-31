@@ -22,30 +22,30 @@ export class Exam extends BaseEntity {
     enum: ExamType,
     name: 'exam_type',
   })
-  examType: ExamType;
+  examType!: ExamType;
 
   @Column({
     type: 'enum',
     enum: ExamVersion,
     default: ExamVersion.FREE,
   })
-  version: ExamVersion;
+  version!: ExamVersion;
 
   @Column({
     type: 'enum',
     enum: ExamStatus,
     default: ExamStatus.NOT_STARTED,
   })
-  status: ExamStatus;
+  status!: ExamStatus;
 
   @Column({ type: 'int', name: 'total_questions' })
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @Column({ type: 'int', default: 0, name: 'current_question' })
-  currentQuestion: number;
+  currentQuestion!: number;
 
   @Column({ type: 'json', name: 'question_sequence' })
-  questionSequence: string[];
+  questionSequence!: string[];
 
   @Column({ type: 'varchar', length: 64, nullable: true, name: 'random_seed' })
   randomSeed?: string;
@@ -63,13 +63,13 @@ export class Exam extends BaseEntity {
   timeSpentSeconds?: number;
 
   // Relations
-  @ManyToOne(() => User, (user) => user.exams, { nullable: true })
+  @ManyToOne(() => User, (user) => user.exams, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   user?: User;
 
   @OneToMany(() => AnswerRecord, (answer) => answer.exam)
-  answers: AnswerRecord[];
+  answers!: AnswerRecord[];
 
   @OneToMany(() => ResultReport, (report) => report.exam)
-  reports: ResultReport[];
+  reports!: ResultReport[];
 }

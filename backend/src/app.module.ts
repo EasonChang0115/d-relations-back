@@ -38,15 +38,15 @@ import { RolesGuard } from './common/guards/roles.guard';
     // Database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => configService.get('database'),
+      useFactory: (configService: ConfigService) => configService.get('database')!,
       inject: [ConfigService],
     }),
 
     // Rate Limiting
     ThrottlerModule.forRoot([
       {
-        ttl: parseInt(process.env.RATE_LIMIT_TTL, 10) || 60,
-        limit: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
+        ttl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10),
+        limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
       },
     ]),
 

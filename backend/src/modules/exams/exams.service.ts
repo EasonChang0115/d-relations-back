@@ -26,13 +26,13 @@ export class ExamsService {
     }
 
     // Get exam configuration
-    const config = EXAM_CONFIG[version.toUpperCase()];
+    const config = EXAM_CONFIG[version.toUpperCase() as keyof typeof EXAM_CONFIG];
     if (!config) {
       throw new BadRequestException('無效的測驗版本');
     }
 
     // Generate random seed for deterministic question selection
-    const randomSeed = this.generateRandomSeed(sessionId || userId, examType);
+    const randomSeed = this.generateRandomSeed(sessionId || userId || '', examType);
 
     // Get random questions using seed-based algorithm
     const questions = await this.questionsService.findRandomQuestions(
@@ -48,9 +48,8 @@ export class ExamsService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + config.validityDays);
 
-    // Create exam
-    const exam = this.examRepository.create({
-      userId,
+    // Create exam (only include userId if it's provided)
+    const examData: any = {
       sessionId,
       examType,
       version,
@@ -60,10 +59,23 @@ export class ExamsService {
       questionSequence,
       randomSeed,
       expiresAt,
-    });
+    };
+
+    // Only set userId if provided and not undefined
+    if (userId !== undefined && userId !== null) {
+      examData.userId = userId;
+    }
+
+    console.log('Creating exam with data:', JSON.stringify(examData, null, 2));
+
+    const exam = this.examRepository.create(examData);
+    console.log('Created exam entity:', JSON.stringify(exam, null, 2));
 
     const savedExam = await this.examRepository.save(exam);
-    return new ExamResponseDto(savedExam);
+
+    // Ensure we're working with a single entity
+    const examResult = Array.isArray(savedExam) ? savedExam[0] : savedExam;
+    return new ExamResponseDto(examResult);
   }
 
   async getCurrentQuestion(examId: string): Promise<CurrentQuestionResponseDto> {
@@ -147,9 +159,11 @@ export class ExamsService {
     if (exam.currentQuestion >= exam.totalQuestions) {
       exam.status = ExamStatus.COMPLETED;
       exam.completedAt = new Date();
-      exam.timeSpentSeconds = Math.floor(
-        (exam.completedAt.getTime() - exam.startedAt.getTime()) / 1000,
-      );
+      if (exam.startedAt) {
+        exam.timeSpentSeconds = Math.floor(
+          (exam.completedAt.getTime() - exam.startedAt.getTime()) / 1000,
+        );
+      }
     }
 
     const updatedExam = await this.examRepository.save(exam);

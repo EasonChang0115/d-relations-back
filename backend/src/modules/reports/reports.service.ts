@@ -134,15 +134,17 @@ export class ReportsService {
       }
 
       const stats = cellTypeMap.get(question.cellType);
-      stats.total += 1;
+      if (stats) {
+        stats.total += 1;
 
-      // Find answer for this question
-      const answer = answers.find((a) => a.questionId === question.id);
-      if (answer) {
-        if (answer.isCorrect) {
-          stats.correct += 1;
-        } else {
-          stats.wrong += 1;
+        // Find answer for this question
+        const answer = answers.find((a) => a.questionId === question.id);
+        if (answer) {
+          if (answer.isCorrect) {
+            stats.correct += 1;
+          } else {
+            stats.wrong += 1;
+          }
         }
       }
     }

@@ -2,42 +2,42 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CellTypeStatDto {
   @ApiProperty({ description: '細胞類型' })
-  cellType: string;
+  cellType!: string;
 
   @ApiProperty({ description: '細胞類型名稱' })
-  cellTypeName: string;
+  cellTypeName!: string;
 
   @ApiProperty({ description: '總題數' })
-  total: number;
+  total!: number;
 
   @ApiProperty({ description: '答對數' })
-  correct: number;
+  correct!: number;
 
   @ApiProperty({ description: '答錯數' })
-  wrong: number;
+  wrong!: number;
 
   @ApiProperty({ description: '正答率 (%)' })
-  accuracyRate: number;
+  accuracyRate!: number;
 }
 
 export class ReportResponseDto {
   @ApiProperty({ description: '報表 ID' })
-  id: string;
+  id!: string;
 
   @ApiProperty({ description: '測驗 ID' })
-  examId: string;
+  examId!: string;
 
   @ApiProperty({ description: '總題數' })
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @ApiProperty({ description: '答對數' })
-  correctAnswers: number;
+  correctAnswers!: number;
 
   @ApiProperty({ description: '答錯數' })
-  wrongAnswers: number;
+  wrongAnswers!: number;
 
   @ApiProperty({ description: '正答率 (%)' })
-  accuracyRate: number;
+  accuracyRate!: number;
 
   @ApiPropertyOptional({ description: '總作答時間 (秒)' })
   totalTimeSeconds?: number;
@@ -49,18 +49,23 @@ export class ReportResponseDto {
   cellTypeStats?: CellTypeStatDto[];
 
   @ApiProperty({ description: '報表生成時間' })
-  generatedAt: Date;
+  generatedAt!: Date;
 
   @ApiProperty({ description: '報表到期時間' })
-  expiresAt: Date;
+  expiresAt!: Date;
 
   @ApiProperty({ description: '是否已過期' })
-  isExpired: boolean;
+  isExpired!: boolean;
 
   @ApiProperty({ description: '建立時間' })
-  createdAt: Date;
+  createdAt!: Date;
 
-  constructor(partial: Partial<ReportResponseDto>) {
+  constructor(partial: Partial<ReportResponseDto> | any) {
     Object.assign(this, partial);
+
+    // Convert cellTypeStats if it's a Record to array
+    if (partial.cellTypeStats && !Array.isArray(partial.cellTypeStats)) {
+      this.cellTypeStats = partial.cellTypeStats as CellTypeStatDto[];
+    }
   }
 }

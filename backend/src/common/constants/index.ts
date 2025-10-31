@@ -33,3 +33,19 @@ export const EXAM_CONFIG = {
     minMembers: 10,
   },
 };
+
+// Cell type labels mapping
+export const CELL_TYPE_LABELS: Record<string, string> = {
+  neutrophil: '嗜中性球',
+  lymphocyte: '淋巴球',
+  monocyte: '單核球',
+  eosinophil: '嗜酸性球',
+  basophil: '嗜鹼性球',
+  blast: '胚細胞',
+  promyelocyte: '前骨髓球',
+  myelocyte: '骨髓球',
+  metamyelocyte: '後骨髓球',
+  band: '帶狀球',
+  erythroblast: '紅血球母細胞',
+  platelet: '血小板',
+};

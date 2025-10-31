@@ -3,13 +3,13 @@ import { ExamType, ExamStatus, ExamVersion } from '@/common/constants';
 
 export class ExamQuestionDto {
   @ApiProperty({ description: '題目 ID' })
-  id: string;
+  id!: string;
 
   @ApiProperty({ description: '題目順序 (1-based)' })
-  order: number;
+  order!: number;
 
   @ApiProperty({ description: '細胞圖片 URL' })
-  imageUrl: string;
+  imageUrl!: string;
 
   @ApiProperty({ description: '縮圖 URL' })
   thumbnailUrl?: string;
@@ -20,7 +20,7 @@ export class ExamQuestionDto {
 
 export class ExamResponseDto {
   @ApiProperty({ description: '測驗 ID' })
-  id: string;
+  id!: string;
 
   @ApiPropertyOptional({ description: '使用者 ID' })
   userId?: string;
@@ -29,19 +29,19 @@ export class ExamResponseDto {
   sessionId?: string;
 
   @ApiProperty({ description: '測驗類型', enum: ExamType })
-  examType: ExamType;
+  examType!: ExamType;
 
   @ApiProperty({ description: '測驗版本', enum: ExamVersion })
-  version: ExamVersion;
+  version!: ExamVersion;
 
   @ApiProperty({ description: '測驗狀態', enum: ExamStatus })
-  status: ExamStatus;
+  status!: ExamStatus;
 
   @ApiProperty({ description: '總題數' })
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @ApiProperty({ description: '當前題號 (0-based)' })
-  currentQuestion: number;
+  currentQuestion!: number;
 
   @ApiPropertyOptional({ description: '開始時間' })
   startedAt?: Date;
@@ -56,10 +56,10 @@ export class ExamResponseDto {
   timeSpentSeconds?: number;
 
   @ApiProperty({ description: '建立時間' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty({ description: '更新時間' })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   constructor(partial: Partial<ExamResponseDto>) {
     Object.assign(this, partial);

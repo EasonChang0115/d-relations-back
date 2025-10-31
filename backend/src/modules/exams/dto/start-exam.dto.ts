@@ -9,7 +9,7 @@ export class StartExamDto {
     example: ExamType.PERIPHERAL_BLOOD
   })
   @IsEnum(ExamType)
-  examType: ExamType;
+  examType!: ExamType;
 
   @ApiProperty({ 
     description: '測驗版本', 
@@ -18,7 +18,7 @@ export class StartExamDto {
     example: ExamVersion.FREE
   })
   @IsEnum(ExamVersion)
-  version: ExamVersion;
+  version!: ExamVersion;
 
   @ApiPropertyOptional({ description: 'Session ID (免費版使用)' })
   @IsString()

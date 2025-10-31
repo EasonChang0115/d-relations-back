@@ -9,35 +9,35 @@ import { Question } from '@/modules/questions/entities/question.entity';
 @Index('idx_is_correct', ['isCorrect'])
 export class AnswerRecord extends BaseEntity {
   @Column({ type: 'varchar', length: 255, name: 'exam_id' })
-  examId: string;
+  examId!: string;
 
   @Column({ type: 'varchar', length: 255, name: 'question_id' })
-  questionId: string;
+  questionId!: string;
 
   @Column({ type: 'int', name: 'question_order' })
-  questionOrder: number;
+  questionOrder!: number;
 
   @Column({ type: 'varchar', length: 100, name: 'user_answer' })
-  userAnswer: string;
+  userAnswer!: string;
 
   @Column({ type: 'varchar', length: 100, name: 'correct_answer' })
-  correctAnswer: string;
+  correctAnswer!: string;
 
   @Column({ type: 'boolean', name: 'is_correct' })
-  isCorrect: boolean;
+  isCorrect!: boolean;
 
   @Column({ type: 'int', nullable: true, name: 'time_spent_seconds' })
   timeSpentSeconds?: number;
 
   @Column({ type: 'timestamp', name: 'answered_at' })
-  answeredAt: Date;
+  answeredAt!: Date;
 
   // Relations
   @ManyToOne(() => Exam, (exam) => exam.answers)
   @JoinColumn({ name: 'exam_id' })
-  exam: Exam;
+  exam!: Exam;
 
   @ManyToOne(() => Question)
   @JoinColumn({ name: 'question_id' })
-  question: Question;
+  question!: Question;
 }

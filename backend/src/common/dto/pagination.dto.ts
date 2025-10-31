@@ -21,20 +21,20 @@ export class PaginationDto {
 
 export class PaginationMetaDto {
   @ApiPropertyOptional({ description: '當前頁碼' })
-  page: number;
+  page!: number;
 
   @ApiPropertyOptional({ description: '每頁筆數' })
-  limit: number;
+  limit!: number;
 
   @ApiPropertyOptional({ description: '總筆數' })
-  totalItems: number;
+  totalItems!: number;
 
   @ApiPropertyOptional({ description: '總頁數' })
-  totalPages: number;
+  totalPages!: number;
 
   @ApiPropertyOptional({ description: '是否有下一頁' })
-  hasNextPage: boolean;
+  hasNextPage!: boolean;
 
   @ApiPropertyOptional({ description: '是否有上一頁' })
-  hasPreviousPage: boolean;
+  hasPreviousPage!: boolean;
 }

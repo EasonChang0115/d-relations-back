@@ -12,28 +12,28 @@ export class Question extends BaseEntity {
     enum: ExamType,
     name: 'exam_type',
   })
-  examType: ExamType;
+  examType!: ExamType;
 
   @Column({ type: 'varchar', length: 50, name: 'cell_type' })
-  cellType: string;
+  cellType!: string;
 
   @Column({ type: 'varchar', length: 100, name: 'correct_answer' })
-  correctAnswer: string;
+  correctAnswer!: string;
 
   @Column({ type: 'varchar', length: 255, name: 'image_id' })
-  imageId: string;
+  imageId!: string;
 
   @Column({ type: 'text', nullable: true })
   description?: string;
 
   @Column({ type: 'int', default: 1 })
-  difficulty: number;
+  difficulty!: number;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
-  isActive: boolean;
+  isActive!: boolean;
 
   // Relation
   @ManyToOne(() => CellImage, (cellImage) => cellImage.questions, { eager: true })
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
-  image: CellImage;
+  image!: CellImage;
 }

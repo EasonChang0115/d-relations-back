@@ -30,7 +30,7 @@ export class User extends BaseEntity {
     enum: UserRole,
     default: UserRole.GUEST,
   })
-  role: UserRole;
+  role!: UserRole;
 
   @Column({ type: 'varchar', length: 255, nullable: true, name: 'session_id' })
   sessionId?: string;
@@ -45,15 +45,15 @@ export class User extends BaseEntity {
   jobTitle?: string;
 
   @Column({ type: 'boolean', default: false, name: 'email_verified' })
-  emailVerified: boolean;
+  emailVerified!: boolean;
 
   @Column({ type: 'timestamp', nullable: true, name: 'last_login_at' })
   lastLoginAt?: Date;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
-  isActive: boolean;
+  isActive!: boolean;
 
   // Relations
   @OneToMany(() => Exam, (exam) => exam.user)
-  exams: Exam[];
+  exams!: Exam[];
 }

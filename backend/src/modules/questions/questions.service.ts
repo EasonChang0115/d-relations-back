@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Question } from './entities/question.entity';
 import { CellImage } from './entities/cell-image.entity';
 import { ExamType } from '@/common/constants';
@@ -58,8 +58,8 @@ export class QuestionsService {
   }
 
   async findByIds(ids: string[]): Promise<Question[]> {
-    return await this.questionRepository.findByIds(ids, {
-      relations: ['image'],
+    return await this.questionRepository.findBy({
+      id: In(ids),
     });
   }
 
