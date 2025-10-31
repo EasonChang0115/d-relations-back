@@ -1,36 +1,43 @@
 <!--
 Sync Impact Report - Constitution Update
 ═══════════════════════════════════════════════════════════════════════════════
-Version Change: 1.0.0 → 1.1.0
-Rationale: MINOR version bump - Added new principle for documentation language requirements
+Version Change: 1.1.0 → 1.1.1
+Rationale: PATCH version bump - Updated project name and clarified language requirements,
+           ensured all placeholders replaced with concrete values
 
 Modified Principles:
-  - N/A
+  - V. Documentation Language Standards - Enhanced clarity on scope and exceptions
 
 Added Sections:
-  - V. Documentation Language Standards (NON-NEGOTIABLE)
+  - N/A
 
 Removed Sections:
   - N/A
 
 Templates Requiring Updates:
-  ✅ plan-template.md - No changes needed (language-agnostic structure)
-  ✅ spec-template.md - No changes needed (language-agnostic structure)
-  ✅ tasks-template.md - No changes needed (language-agnostic structure)
-  ⚠ All command files in .github/prompts/ - Should enforce zh-TW in generated output
-  ⚠ Template files - Should be updated to include zh-TW examples or notes
+  ✅ plan-template.md - Validated, language-agnostic structure compatible
+  ✅ spec-template.md - Validated, language-agnostic structure compatible
+  ✅ tasks-template.md - Validated, language-agnostic structure compatible
+  ✅ checklist-template.md - Validated, structure compatible
+  ✅ agent-file-template.md - Validated, structure compatible
+  ⚠ All command files in .github/prompts/ - MUST enforce zh-TW output for specs, plans, tasks
+  ⚠ speckit.specify.prompt.md - MUST generate spec.md in Traditional Chinese
+  ⚠ speckit.plan.prompt.md - MUST generate plan.md and design docs in Traditional Chinese
+  ⚠ speckit.tasks.prompt.md - MUST generate tasks.md in Traditional Chinese
 
 Follow-up TODOs:
-  - Update command prompt files to enforce Traditional Chinese output
-  - Consider adding zh-TW examples to template comments
-  - Update any existing English documentation to Traditional Chinese
+  - Update command prompt files to explicitly enforce Traditional Chinese output
+  - Add zh-TW language enforcement reminders in prompt file headers
+  - Validate existing documentation against language requirements
+  - Consider adding language validation checks to CI/CD pipeline
 
-Generated: 2025-10-30
-Previous Update: 2025-10-30 (v1.0.0 - Initial constitution)
+Generated: 2025-10-31
+Previous Update: 2025-10-30 (v1.1.0 - Added documentation language standards)
+Original Ratification: 2025-10-30 (v1.0.0 - Initial constitution)
 ═══════════════════════════════════════════════════════════════════════════════
 -->
 
-# Speck-Kit Demo Constitution
+# D・リレーションズ力量測驗系統 開發憲章
 
 ## Core Principles
 
@@ -98,23 +105,23 @@ System performance directly impacts user satisfaction and operational costs:
 
 **Rationale**: Performance is a feature, not an afterthought. Slow systems frustrate users and increase operational costs. Early performance testing prevents expensive rewrites.
 
-### V. Documentation Language Standards (NON-NEGOTIABLE)
+### V. 文件語言標準 (不可協商)
 
-All project documentation intended for specification, planning, and end-user consumption MUST be written in Traditional Chinese (zh-TW):
+所有面向規格說明、規劃與終端使用者的專案文件必須以繁體中文（zh-TW）撰寫：
 
-- **Specifications (spec.md)**: All feature specifications, user stories, acceptance criteria, and requirements MUST be written in Traditional Chinese.
-- **Implementation Plans (plan.md)**: All technical context, architecture decisions, and implementation plans MUST be written in Traditional Chinese.
-- **User-Facing Documentation**: All user guides, quickstart documents, API documentation, and help content MUST be written in Traditional Chinese.
-- **Task Descriptions (tasks.md)**: All task lists, descriptions, and acceptance criteria MUST be written in Traditional Chinese.
-- **Code Comments (User-Facing)**: Comments intended for end-users or documentation generation MUST be in Traditional Chinese.
-- **Error Messages**: All user-facing error messages, warnings, and notifications MUST be in Traditional Chinese.
-- **Exceptions for Code**:
-  - Source code (variable names, function names, class names) MAY use English for technical clarity and international collaboration.
-  - Internal technical comments explaining implementation details MAY use English.
-  - Third-party library documentation references MAY remain in original language.
-  - Git commit messages MAY use English for international team coordination.
+- **功能規格書 (spec.md)**：所有功能規格、使用者故事、驗收條件與需求必須使用繁體中文撰寫。
+- **實作計畫 (plan.md)**：所有技術背景、架構決策與實作計畫必須使用繁體中文撰寫。
+- **使用者面向文件**：所有使用者指南、快速入門文件、API 文件與說明內容必須使用繁體中文撰寫。
+- **任務描述 (tasks.md)**：所有任務清單、描述與驗收條件必須使用繁體中文撰寫。
+- **使用者面向程式碼註解**：供終端使用者閱讀或用於文件產生的註解必須使用繁體中文。
+- **錯誤訊息**：所有使用者面向的錯誤訊息、警告與通知必須使用繁體中文。
+- **程式碼例外規則**：
+  - 原始碼（變數名稱、函式名稱、類別名稱）可使用英文以確保技術清晰度與國際協作。
+  - 解釋實作細節的內部技術註解可使用英文。
+  - 第三方函式庫文件引用可保留原始語言。
+  - Git commit 訊息可使用英文以利國際團隊協作。
 
-**Rationale**: Consistent use of Traditional Chinese ensures accessibility for the primary user base, reduces translation errors, and maintains cultural and linguistic appropriateness. Clear language boundaries between code (technical/English) and documentation (user-focused/Traditional Chinese) prevent confusion while maintaining international development standards.
+**理由**：一致使用繁體中文確保主要使用者群的可及性，減少翻譯錯誤，並維持文化與語言的適當性。在程式碼（技術性／英文）與文件（使用者導向／繁體中文）之間建立清晰的語言界線，可防止混淆同時維持國際開發標準。
 
 ## Performance Standards
 
@@ -194,4 +201,4 @@ This constitution supersedes all other development practices and policies. All t
 - Amendments reflect lessons learned and evolving project needs.
 - All team members contribute to keeping principles practical and relevant.
 
-**Version**: 1.1.0 | **Ratified**: 2025-10-30 | **Last Amended**: 2025-10-30
+**版本**: 1.1.1 | **批准日期**: 2025-10-30 | **最後修訂**: 2025-10-31
