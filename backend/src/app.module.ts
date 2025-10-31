@@ -7,6 +7,11 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { QuestionsModule } from './modules/questions/questions.module';
+import { ExamsModule } from './modules/exams/exams.module';
+import { AnswersModule } from './modules/answers/answers.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
@@ -47,6 +52,11 @@ import { RolesGuard } from './common/guards/roles.guard';
 
     // Feature Modules
     AuthModule,
+    UsersModule,
+    QuestionsModule,
+    ExamsModule,
+    AnswersModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [

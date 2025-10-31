@@ -136,11 +136,56 @@
 
 **檔案統計**: 29 個 TypeScript 檔案已建立
 
-### 🎯 Phase 4-8: 使用者故事實作
+### ✅ Phase 4: User Story 1 - 免費版測驗
+**狀態**: 已完成
+**任務**: T028-T054 (27 任務)
+**已完成**:
+
+**資料實體 (6 個)**:
+- [x] T028: User 實體 (users/entities/user.entity.ts)
+- [x] T029: Question 實體 (questions/entities/question.entity.ts)
+- [x] T030: CellImage 實體 (questions/entities/cell-image.entity.ts)
+- [x] T031: Exam 實體 (exams/entities/exam.entity.ts)
+- [x] T032: AnswerRecord 實體 (answers/entities/answer-record.entity.ts)
+- [x] T033: ResultReport 實體 (reports/entities/result-report.entity.ts)
+
+**DTO 與驗證 (8 個)**:
+- [x] T034: User DTO (create, update, response)
+- [x] T035: Exam DTO (start-exam, exam-response, current-question)
+- [x] T036: Answer DTO (submit-answer, answer-response)
+- [x] T037: Report DTO (report-response)
+
+**服務層邏輯 (5 個)**:
+- [x] T038: UsersService - 使用者管理
+- [x] T039: QuestionsService - 題庫管理與隨機選題
+- [x] T040: ExamsService - 測驗管理與 Seed-based Random 演算法
+- [x] T041: AnswersService - 答案驗證與進度更新
+- [x] T042: ReportsService - 報表生成與統計分析
+
+**API 端點 (4 個 Controllers)**:
+- [x] T043: UsersController (GET /users/profile, PUT /users/profile)
+- [x] T044: ExamsController (POST /exams/start, GET /exams/:id/current)
+- [x] T045: AnswersController (POST /answers/submit)
+- [x] T046: ReportsController (GET /reports/:id, POST /reports/exam/:examId)
+
+**模組整合 (5 個)**:
+- [x] T047: UsersModule
+- [x] T048: QuestionsModule
+- [x] T049: ExamsModule
+- [x] T050: AnswersModule
+- [x] T051: ReportsModule
+
+**資料庫種子資料 (2 個)**:
+- [x] T052: 細胞圖片種子資料 (170 張圖片)
+- [x] T053: 題庫種子資料 (170 題)
+
+**檔案統計**: 31 個 TypeScript 檔案已建立
+
+### 🎯 Phase 5-8: 其他使用者故事
 **狀態**: 待開始
 **優先順序**:
 1. **P1 MVP**: 
-   - US1 (免費版測驗) - 29 任務
+   - US1 (免費版測驗) - ✅ 已完成
    - US2 (使用者資訊登錄) - 7 任務
    - US6 (隨機出題機制) - 11 任務
    - **預估**: 3-4 週 (1 位開發者)
