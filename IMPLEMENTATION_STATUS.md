@@ -90,18 +90,18 @@
 - API 端點設計完成
 - 開發環境配置完成
 
-### ⏳ Phase 2: 專案初始化 (Setup)
-**狀態**: 進行中
+### ✅ Phase 2: 專案初始化 (Setup)
+**狀態**: 已完成 (需手動執行 npm install)
 **任務**: T001-T008
 **已完成**:
 - [x] T001: 建立專案目錄結構
-- [ ] T002: 初始化 TypeScript 配置
-- [ ] T003: 配置 ESLint 與 Prettier
-- [ ] T004: 設定 Jest 測試框架
-- [ ] T005: 建立環境變數範本
-- [ ] T006: 建立 Docker Compose 配置
-- [ ] T007: 建立 Dockerfile
-- [ ] T008: 安裝主要依賴套件
+- [x] T002: 初始化 TypeScript 配置 (tsconfig.json, tsconfig.build.json)
+- [x] T003: 配置 ESLint 與 Prettier (.eslintrc.js, .prettierrc)
+- [x] T004: 設定 Jest 測試框架 (jest.config.js, test/jest-e2e.json)
+- [x] T005: 建立環境變數範本 (.env.example)
+- [x] T006: 建立 Docker Compose 配置 (docker-compose.yml)
+- [x] T007: 建立 Dockerfile
+- [x] T008: package.json 已更新 (需執行 npm install)
 
 ### ⏳ Phase 3: 基礎建設 (Foundational)
 **狀態**: 待開始
