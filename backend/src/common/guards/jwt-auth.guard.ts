@@ -23,6 +23,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err: any, user: any, info: any) {
     if (err || !user) {
+      if (info?.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Token 已過期，請重新登入');
+      }
+      if (info?.name === 'JsonWebTokenError') {
+        throw new UnauthorizedException('無效的 Token');
+      }
       throw err || new UnauthorizedException('未授權的訪問');
     }
     return user;

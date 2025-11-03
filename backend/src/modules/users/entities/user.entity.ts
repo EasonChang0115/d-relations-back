@@ -71,6 +71,12 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive!: boolean;
 
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'password_reset_token', select: false })
+  passwordResetToken?: string;
+
+  @Column({ type: 'timestamp', nullable: true, name: 'password_reset_expires' })
+  passwordResetExpires?: Date;
+
   // Relations
   @OneToMany(() => Exam, (exam) => exam.user)
   exams!: Exam[];

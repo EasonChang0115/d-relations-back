@@ -62,12 +62,12 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 - [x] T013 [P] 實作 JWT 認證守衛 (backend/src/common/guards/jwt-auth.guard.ts)
 - [x] T014 [P] 實作角色守衛 (backend/src/common/guards/roles.guard.ts)，支援 4 種使用者角色
 - [x] T015 [P] 建立自訂裝飾器 (backend/src/common/decorators/current-user.decorator.ts, roles.decorator.ts, public.decorator.ts)
-- [ ] T015a [P] 建立 Auth DTO (backend/src/modules/auth/dto/register.dto.ts, login.dto.ts)，包含密碼驗證規則
-- [ ] T015b [P] 實作 AuthService (backend/src/modules/auth/auth.service.ts)，處理註冊、登入、登出、Token 刷新邏輯
-- [ ] T015c [P] 實作密碼加密服務 (backend/src/modules/auth/services/password.service.ts)，使用 bcrypt
-- [ ] T015d [P] 實作 Local 策略 (backend/src/modules/auth/strategies/local.strategy.ts)，用於密碼登入驗證
-- [ ] T015e 實作 AuthController (backend/src/modules/auth/auth.controller.ts)，端點: POST /api/auth/register, POST /api/auth/login, POST /api/auth/logout, POST /api/auth/refresh, GET /api/auth/me, POST /api/auth/forgot-password, POST /api/auth/reset-password, POST /api/auth/change-password
-- [ ] T015f 建立 AuthModule (backend/src/modules/auth/auth.module.ts)，整合所有認證相關服務
+- [x] T015a [P] 建立 Auth DTO (backend/src/modules/auth/dto/register.dto.ts, login.dto.ts)，包含密碼驗證規則
+- [x] T015b [P] 實作 AuthService (backend/src/modules/auth/auth.service.ts)，處理註冊、登入、登出、Token 刷新邏輯
+- [x] T015c [P] 實作密碼加密服務 (backend/src/modules/auth/services/password.service.ts)，使用 bcrypt
+- [x] T015d [P] 實作 Local 策略 (backend/src/modules/auth/strategies/local.strategy.ts)，用於密碼登入驗證
+- [x] T015e 實作 AuthController (backend/src/modules/auth/auth.controller.ts)，端點: POST /api/auth/register, POST /api/auth/login, POST /api/auth/logout, POST /api/auth/refresh, GET /api/auth/me, POST /api/auth/forgot-password, POST /api/auth/reset-password, POST /api/auth/change-password
+- [x] T015f 建立 AuthModule (backend/src/modules/auth/auth.module.ts)，整合所有認證相關服務
 
 ### API 架構與中間件
 
@@ -92,11 +92,11 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 密碼管理功能
 
-- [ ] T027a [P] 建立 PasswordResetToken 實體 (backend/src/modules/auth/entities/password-reset-token.entity.ts)，記錄重設 Token 與過期時間
-- [ ] T027b [P] 實作忘記密碼邏輯 (AuthService - forgotPassword 方法)，生成重設 Token 並發送郵件
-- [ ] T027c [P] 實作重設密碼邏輯 (AuthService - resetPassword 方法)，驗證 Token 並更新密碼
-- [ ] T027d [P] 實作變更密碼邏輯 (AuthService - changePassword 方法)，驗證舊密碼並更新新密碼
-- [ ] T027e [P] 建立密碼重設郵件範本 (backend/src/modules/mail/templates/password-reset.hbs)
+- [x] T027a [P] 建立 PasswordResetToken 實體 (backend/src/modules/auth/entities/password-reset-token.entity.ts)，記錄重設 Token 與過期時間
+- [x] T027b [P] 實作忘記密碼邏輯 (AuthService - forgotPassword 方法)，生成重設 Token 並發送郵件
+- [x] T027c [P] 實作重設密碼邏輯 (AuthService - resetPassword 方法)，驗證 Token 並更新密碼
+- [x] T027d [P] 實作變更密碼邏輯 (AuthService - changePassword 方法)，驗證舊密碼並更新新密碼
+- [x] T027e [P] 建立密碼重設郵件範本 (backend/src/modules/mail/templates/password-reset.hbs)
 
 **Checkpoint**: 基礎建設完成 - 可開始平行開發使用者故事
 
@@ -172,7 +172,7 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 資料實體增強
 
-- [ ] T057 [P] [US2] 擴充 User 實體 (backend/src/modules/users/entities/user.entity.ts)，新增 password (加密)、password_reset_token、password_reset_expires 欄位
+- [x] T057 [P] [US2] 擴充 User 實體 (backend/src/modules/users/entities/user.entity.ts)，新增 password (加密)、password_reset_token、password_reset_expires 欄位
 
 ### 資料驗證增強
 
@@ -186,17 +186,17 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 認證流程整合
 
-- [ ] T062 [US2] 整合註冊流程 (AuthService - register 方法)，呼叫 UsersService 建立使用者並加密密碼
-- [ ] T063 [US2] 整合登入流程 (AuthService - login 方法)，驗證密碼並返回 JWT Token
-- [ ] T064 [US2] 實作 Token 刷新邏輯 (AuthService - refreshToken 方法)，驗證 Refresh Token 並生成新的 Access Token
-- [ ] T065 [US2] 實作登出邏輯 (AuthService - logout 方法)，將 Token 加入黑名單 (Redis)
+- [x] T062 [US2] 整合註冊流程 (AuthService - register 方法)，呼叫 UsersService 建立使用者並加密密碼
+- [x] T063 [US2] 整合登入流程 (AuthService - login 方法)，驗證密碼並返回 JWT Token
+- [x] T064 [US2] 實作 Token 刷新邏輯 (AuthService - refreshToken 方法)，驗證 Refresh Token 並生成新的 Access Token
+- [x] T065 [US2] 實作登出邏輯 (AuthService - logout 方法)，將 Token 加入黑名單 (Redis)
 
 ### 錯誤處理
 
 - [x] T066 [US2] 實作 Email 重複檢查邏輯 (UsersService)，返回 HTTP 409 如 email 已存在
 - [x] T067 [US2] 實作欄位格式錯誤處理 (ValidationPipe)，返回 HTTP 400 與詳細錯誤訊息
-- [ ] T068 [US2] 實作登入失敗處理 (AuthService)，返回 HTTP 401 如密碼錯誤
-- [ ] T069 [US2] 實作 Token 無效處理 (JwtAuthGuard)，返回 HTTP 401 如 Token 過期或無效
+- [x] T068 [US2] 實作登入失敗處理 (AuthService)，返回 HTTP 401 如密碼錯誤
+- [x] T069 [US2] 實作 Token 無效處理 (JwtAuthGuard)，返回 HTTP 401 如 Token 過期或無效
 
 **Checkpoint**: 使用者故事 1 與 2 皆可獨立運作，完整的註冊登入流程已實作
 
