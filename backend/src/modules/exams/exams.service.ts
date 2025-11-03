@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Exam } from './entities/exam.entity';
 import { StartExamDto } from './dto/start-exam.dto';
 import { ExamResponseDto, CurrentQuestionResponseDto, ExamQuestionDto } from './dto/exam-response.dto';
@@ -11,6 +12,8 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class ExamsService {
+  private readonly logger = new Logger(ExamsService.name);
+
   constructor(
     @InjectRepository(Exam)
     private readonly examRepository: Repository<Exam>,
@@ -287,6 +290,27 @@ export class ExamsService {
     // For now, accept any format
     const isValid = /^[a-f0-9-]{36}$/.test(batchToken) && /^[a-f0-9-]{36}$/.test(invitationToken);
     return { valid: isValid };
+  }
+
+  /**
+   * Daily cron job to cleanup expired exams (2:00 AM every day)
+   * Deletes exams that have been viewing-expired for more than 7 days
+   */
+  @Cron('0 2 * * *')
+  async cleanupExpiredExams(): Promise<void> {
+    this.logger.log('Starting cleanup of expired exams');
+
+    try {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+      const result = await this.examRepository.delete({
+        viewExpiresAt: () => `viewExpiresAt < '${sevenDaysAgo.toISOString()}'`,
+      });
+
+      this.logger.log(`Cleaned up ${result.affected || 0} expired exams`);
+    } catch (error) {
+      this.logger.error('Cleanup of expired exams failed:', error);
+    }
   }
 
   /**

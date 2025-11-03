@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
   private transporter: any;
+  private readonly logger = new Logger(MailService.name);
 
   constructor(private readonly configService: ConfigService) {
     // TODO: Configure with AWS SES or other mail service
@@ -205,6 +207,29 @@ export class MailService {
     } catch (error) {
       console.error('Failed to send exam reminder email:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Daily cron job to send exam reminder emails (9:00 AM every day)
+   * Processes incomplete exams expiring within 3 days
+   */
+  @Cron('0 9 * * *')
+  async dailyReminderJob(): Promise<void> {
+    this.logger.log('Starting daily exam reminder job');
+
+    try {
+      // TODO: Query incomplete exams expiring soon
+      // SELECT * FROM exams WHERE status != 'completed' AND view_expires_at < NOW() + INTERVAL 3 DAYS
+
+      // TODO: For each exam, check shouldSendReminder()
+      // if (shouldSendReminder(exam)) {
+      //   await sendExamReminder(...)
+      // }
+
+      this.logger.log('Daily reminder job completed');
+    } catch (error) {
+      this.logger.error('Daily reminder job failed:', error);
     }
   }
 

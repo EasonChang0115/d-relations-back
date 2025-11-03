@@ -192,6 +192,27 @@ export class AuthService {
   }
 
   /**
+   * Renew user session (auto-extends 10-day validity)
+   */
+  async renewSession(user: User): Promise<{ expiresAt: number }> {
+    const expiresAt = Date.now() + 10 * 24 * 60 * 60 * 1000; // 10 days
+    return { expiresAt };
+  }
+
+  /**
+   * Create taker session for group exams (10-day validity)
+   */
+  async createTakerSession(takerId: string, batchId: string): Promise<{ sessionToken: string; expiresAt: number }> {
+    const expiresAt = Date.now() + 10 * 24 * 60 * 60 * 1000; // 10 days
+    const sessionToken = this.jwtService.sign(
+      { takerId, batchId, type: 'taker' },
+      { expiresIn: '10d' },
+    );
+
+    return { sessionToken, expiresAt };
+  }
+
+  /**
    * Create admin session for group management
    * Session valid for 1 hour of inactivity
    */

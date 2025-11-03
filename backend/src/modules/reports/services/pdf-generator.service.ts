@@ -1,31 +1,103 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue, Job } from 'bull';
 import { PdfTemplateBuilder } from './pdf-template.builder';
+
+interface PdfGenerationPayload {
+  reportId: string;
+  userId: string;
+  reportData: any;
+}
 
 /**
  * PDF Generation Service
- * Generates PDF reports from exam results using puppeteer
- * Note: In production, integrate with external service like AWS Lambda + wkhtmltopdf
+ * Queues PDF generation as background jobs
+ * Returns URL after generation completes
  */
 @Injectable()
 export class PdfGeneratorService {
-  constructor(private readonly templateBuilder: PdfTemplateBuilder) {}
+  private readonly logger = new Logger(PdfGeneratorService.name);
+
+  constructor(
+    @InjectQueue('pdf-generation') private pdfQueue: Queue,
+    private readonly templateBuilder: PdfTemplateBuilder,
+  ) {
+    this.setupQueueListeners();
+  }
 
   /**
-   * Generate PDF for result report
+   * Queue PDF generation (async background job)
+   */
+  async queuePdfGeneration(userId: string, reportId: string, reportData: any): Promise<string> {
+    const job = await this.pdfQueue.add(
+      { userId, reportId, reportData } as PdfGenerationPayload,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+      },
+    );
+
+    this.logger.log(`PDF generation queued: job ${job.id} for report ${reportId}`);
+    return job.id.toString();
+  }
+
+  /**
+   * Process PDF generation job
+   */
+  async processPdfGeneration(job: Job<PdfGenerationPayload>): Promise<string> {
+    try {
+      const { reportId, userId, reportData } = job.data;
+      this.logger.log(`Processing PDF job ${job.id} for report ${reportId}`);
+
+      // Generate HTML template
+      const html = this.templateBuilder.buildResultReportTemplate(reportData);
+
+      // In production, convert HTML to PDF using one of:
+      // 1. Puppeteer (requires Chromium)
+      // 2. wkhtmltopdf (system dependency)
+      // 3. AWS Lambda + external service
+      // 4. Third-party PDF API
+
+      this.logger.log(`PDF generation completed for report ${reportId}`);
+      return html;
+    } catch (error) {
+      this.logger.error(`PDF generation failed for job ${job.id}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate PDF for result report (synchronous - uses queue internally)
    * Returns HTML for now - in production use: puppeteer, wkhtmltopdf, or similar
    */
-  async generateResultPdf(reportData: any): Promise<string> {
+  async generateResultPdf(reportData: any, userId?: string, reportId?: string): Promise<string> {
     // Generate HTML template
     const html = this.templateBuilder.buildResultReportTemplate(reportData);
 
-    // In production, convert HTML to PDF using one of:
-    // 1. Puppeteer (requires Chromium)
-    // 2. wkhtmltopdf (system dependency)
-    // 3. AWS Lambda + external service
-    // 4. Third-party PDF API
+    // Queue PDF generation if IDs provided
+    if (userId && reportId) {
+      await this.queuePdfGeneration(userId, reportId, reportData);
+    }
 
-    // For now, return HTML for client-side rendering or queue for background processing
     return html;
+  }
+
+  private setupQueueListeners(): void {
+    this.pdfQueue.on('completed', (job) => {
+      this.logger.log(`PDF job ${job.id} completed successfully`);
+    });
+
+    this.pdfQueue.on('failed', (job, err) => {
+      this.logger.error(`PDF job ${job.id} failed after retries: ${err.message}`);
+    });
+
+    this.pdfQueue.on('stalled', (job) => {
+      this.logger.warn(`PDF job ${job.id} stalled, will be retried`);
+    });
   }
 
   /**

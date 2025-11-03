@@ -1,0 +1,41 @@
+{
+  "common": {
+    "success": "成功",
+    "error": "發生錯誤",
+    "validation_failed": "驗證失敗",
+    "unauthorized": "未授權",
+    "forbidden": "禁止訪問",
+    "not_found": "未找到"
+  },
+  "auth": {
+    "email_registered": "該電子郵件已被註冊",
+    "invalid_credentials": "電子郵件或密碼無效",
+    "account_disabled": "該帳戶已被停用",
+    "session_expired": "會話已過期，請重新登入",
+    "otp_invalid": "OTP 無效或已過期",
+    "otp_locked": "帳戶已鎖定，請在 {seconds} 秒後重試",
+    "password_changed": "密碼已成功變更"
+  },
+  "exams": {
+    "exam_not_found": "測驗未找到",
+    "exam_expired": "測驗已過期",
+    "exam_completed": "測驗已完成",
+    "question_not_found": "問題未找到",
+    "invalid_answer": "無效答案",
+    "exam_started": "測驗已開始",
+    "exam_not_started": "測驗未開始"
+  },
+  "payments": {
+    "payment_failed": "付款失敗",
+    "payment_completed": "付款已完成",
+    "invalid_payment": "無效付款",
+    "insufficient_balance": "餘額不足"
+  },
+  "groups": {
+    "batch_created": "批次已建立",
+    "batch_not_found": "批次未找到",
+    "batch_expired": "批次已過期",
+    "taker_added": "受測者已新增",
+    "invalid_taker_count": "受測者計數無效"
+  }
+}

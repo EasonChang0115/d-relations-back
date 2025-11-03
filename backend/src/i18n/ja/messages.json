@@ -1,0 +1,41 @@
+{
+  "common": {
+    "success": "成功",
+    "error": "エラーが発生しました",
+    "validation_failed": "検証に失敗しました",
+    "unauthorized": "認可されていません",
+    "forbidden": "禁止されています",
+    "not_found": "見つかりません"
+  },
+  "auth": {
+    "email_registered": "このメールアドレスは既に登録されています",
+    "invalid_credentials": "無効なメールアドレスまたはパスワード",
+    "account_disabled": "このアカウントは無効化されています",
+    "session_expired": "セッションの有効期限が切れています。もう一度ログインしてください",
+    "otp_invalid": "OTPが無効または期限切れです",
+    "otp_locked": "アカウントがロックされています。{seconds}秒後に再度お試しください",
+    "password_changed": "パスワードが正常に変更されました"
+  },
+  "exams": {
+    "exam_not_found": "試験が見つかりません",
+    "exam_expired": "試験の有効期限が切れています",
+    "exam_completed": "試験は完了しています",
+    "question_not_found": "質問が見つかりません",
+    "invalid_answer": "無効な答え",
+    "exam_started": "試験が開始されています",
+    "exam_not_started": "試験が開始されていません"
+  },
+  "payments": {
+    "payment_failed": "支払いに失敗しました",
+    "payment_completed": "支払いが完了しました",
+    "invalid_payment": "無効な支払い",
+    "insufficient_balance": "残高不足"
+  },
+  "groups": {
+    "batch_created": "バッチが作成されました",
+    "batch_not_found": "バッチが見つかりません",
+    "batch_expired": "バッチの有効期限が切れています",
+    "taker_added": "受験者が追加されました",
+    "invalid_taker_count": "無効な受験者数"
+  }
+}
