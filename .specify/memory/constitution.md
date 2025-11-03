@@ -1,204 +1,274 @@
 <!--
 Sync Impact Report - Constitution Update
 ═══════════════════════════════════════════════════════════════════════════════
-Version Change: 1.1.0 → 1.1.1
-Rationale: PATCH version bump - Updated project name and clarified language requirements,
-           ensured all placeholders replaced with concrete values
+Version Change: 2.0.0 → 2.1.0
+Rationale: MINOR version bump - Critical language requirements clarification for Japanese end-users,
+           added multi-language development standards while preserving Traditional Chinese for 
+           internal development documentation
 
 Modified Principles:
-  - V. Documentation Language Standards - Enhanced clarity on scope and exceptions
+  - V. Documentation & Communication Standards → Multi-language Development & User Interface Standards
+    (CRITICAL CHANGE: End-user interfaces MUST use Japanese, internal docs remain Traditional Chinese)
 
 Added Sections:
-  - N/A
+  - Medical terminology cross-reference requirements (Chinese-Japanese)
+  - User interface localization standards
+  - Quality assurance for Japanese language content
 
 Removed Sections:
-  - N/A
+  - Outdated assumption that end-users would use Traditional Chinese
 
 Templates Requiring Updates:
-  ✅ plan-template.md - Validated, language-agnostic structure compatible
-  ✅ spec-template.md - Validated, language-agnostic structure compatible
-  ✅ tasks-template.md - Validated, language-agnostic structure compatible
-  ✅ checklist-template.md - Validated, structure compatible
-  ✅ agent-file-template.md - Validated, structure compatible
-  ⚠ All command files in .github/prompts/ - MUST enforce zh-TW output for specs, plans, tasks
-  ⚠ speckit.specify.prompt.md - MUST generate spec.md in Traditional Chinese
-  ⚠ speckit.plan.prompt.md - MUST generate plan.md and design docs in Traditional Chinese
-  ⚠ speckit.tasks.prompt.md - MUST generate tasks.md in Traditional Chinese
+  ✅ plan-template.md - Compatible, internal development documents remain zh-TW
+  ✅ spec-template.md - Compatible, specs remain zh-TW with Japanese terminology notes
+  ✅ tasks-template.md - Compatible, tasks remain zh-TW for development team
+  ✅ checklist-template.md - Compatible, development checklists remain zh-TW
+  ✅ agent-file-template.md - Compatible, development guidelines remain zh-TW
+  ⚠ All command files in .github/prompts/ - MUST clarify Japanese UI vs Chinese dev docs
+  ⚠ Frontend implementation - MUST implement Japanese localization for all user-facing content
+  ⚠ Backend error messages - MUST return Japanese messages to frontend/users
+  ⚠ Email templates - MUST be in Japanese for end users (OTP, notifications, etc.)
 
 Follow-up TODOs:
-  - Update command prompt files to explicitly enforce Traditional Chinese output
-  - Add zh-TW language enforcement reminders in prompt file headers
-  - Validate existing documentation against language requirements
-  - Consider adding language validation checks to CI/CD pipeline
+  - Update command prompt files to distinguish between dev docs (zh-TW) and UI content (Japanese)
+  - Create medical terminology Chinese-Japanese cross-reference table
+  - Establish Japanese language review process with client
+  - Implement Japanese localization system for all user-facing content
+  - Add Japanese language quality checks to CI/CD pipeline
+  - Update error handling to return Japanese messages to users
 
-Generated: 2025-10-31
-Previous Update: 2025-10-30 (v1.1.0 - Added documentation language standards)
+Generated: 2025-11-03
+Previous Update: 2025-11-03 (v2.0.0 - Initial medical system constitution)
 Original Ratification: 2025-10-30 (v1.0.0 - Initial constitution)
 ═══════════════════════════════════════════════════════════════════════════════
 -->
 
-# D・リレーションズ力量測驗系統 開發憲章
+# D・リレーションズ 目合わせ・力量テスト支援サイト 開發憲章
 
-## Core Principles
+## 核心原則 (Core Principles)
 
-### I. Code Quality Standards (NON-NEGOTIABLE)
+### I. 醫學資料完整性 (Medical Data Integrity) - 不可協商
 
-All code submitted to the repository MUST meet the following non-negotiable quality standards:
+所有醫學測驗相關的資料處理必須確保絕對的完整性與準確性：
 
-- **Readability First**: Code MUST be self-documenting with clear variable names, function names, and logical structure. Complex logic MUST include explanatory comments.
-- **Single Responsibility**: Each function, class, or module MUST have one clearly defined purpose. Functions exceeding 50 lines MUST be justified or refactored.
-- **No Dead Code**: Commented-out code, unused imports, and unreachable code are prohibited. Remove or document exceptional cases.
-- **Type Safety**: Where applicable, use static typing (TypeScript, Python type hints, etc.). All public APIs MUST have type annotations.
-- **Error Handling**: All error conditions MUST be handled explicitly. Silent failures are prohibited. Errors MUST include context for debugging.
-- **Code Review Required**: No code merges to main without approval from at least one other developer who verifies compliance with these standards.
+- **題目資料不可變性**: 測驗題目一旦建立並審核，不得任意修改。所有題目修改必須經過版本控制與稽核記錄。
+- **答案資料防竄改**: 使用者答案一旦提交，不得修改。系統必須記錄每次答案提交的時間戳記與雜湊值。
+- **圖片完整性驗證**: 所有細胞圖片必須具備校驗碼（checksum），確保圖片未被竄改或損毀。
+- **測驗結果不可逆**: 測驗結果一旦產生，不得人工修改。若發現錯誤，必須透過版本化的更正程序處理。
+- **隨機性可重現**: 隨機出題邏輯必須可重現，以供稽核與爭議處理使用。
+- **資料備份與復原**: 所有醫學測驗資料必須進行定期備份，並具備災難復原機制。
+- **操作記錄追蹤**: 所有對測驗資料的操作（建立、讀取、更新、刪除）必須記錄操作者、時間與內容。
 
-**Rationale**: Code is read far more often than written. Maintainability and onboarding speed are critical success factors. Poor code quality creates exponential technical debt.
+**理由**: 醫學測驗結果直接影響專業認證與病患安全。資料完整性是醫療系統的基本要求，任何資料竄改可能導致錯誤的能力評估。
 
-### II. Testing Standards (NON-NEGOTIABLE)
+### II. 安全性與隱私合規 (Security & Privacy Compliance) - 不可協商
 
-Test-Driven Development is mandatory. All features MUST follow this sequence:
+系統必須確保使用者隱私與資料安全，符合醫療資料處理法規：
 
-- **Test-First Development**: Write failing tests BEFORE implementation. This sequence is enforced: (1) Write test → (2) User/reviewer approves test → (3) Verify test fails → (4) Implement → (5) Verify test passes.
-- **Coverage Requirements**: Minimum 80% code coverage for unit tests. Critical paths (authentication, payment, data modification) MUST have 100% coverage.
-- **Test Categories Required**:
-  - **Unit Tests**: Test individual functions/classes in isolation. MUST run in <1 second total.
-  - **Integration Tests**: Test component interactions. Required for all API endpoints, database operations, and service integrations.
-  - **Contract Tests**: Required for all external APIs, microservice boundaries, and shared data schemas.
-- **Test Independence**: Each test MUST be runnable in isolation. No test dependencies or execution order requirements.
-- **Test Clarity**: Test names MUST describe the scenario being tested in plain language (e.g., `test_user_login_fails_with_invalid_password`).
-- **Continuous Testing**: All tests MUST pass before merge. CI/CD pipeline enforces this gate.
+- **OTP 驗證強制性**: 所有付費測驗與團體測驗必須通過一次性密碼驗證，確保身份真實性。
+- **個人資料加密**: 所有個人識別資訊（姓名、電子郵件、測驗結果）必須加密儲存與傳輸。
+- **存取權限最小化**: 系統操作者僅能存取執行職務所需的最小資料範圍。
+- **測驗結果隱私**: 個人測驗結果僅限本人查看。團體測驗結果僅限授權的管理者查看。
+- **資料保存期限**: 個人資料與測驗結果必須依據法規要求設定保存期限與自動刪除機制。
+- **第三方整合安全**: 與 Stripe 等第三方服務的整合必須使用安全的 API 金鑰管理與 HTTPS 加密。
+- **安全事件記錄**: 所有安全相關事件（登入失敗、權限違規、資料存取）必須記錄並監控。
+- **定期安全稽核**: 系統必須定期進行安全性評估與漏洞掃描。
 
-**Rationale**: Tests are living documentation and safety nets for refactoring. Test-first development ensures testability is built in, not bolted on. High-quality tests prevent regressions and enable confident iteration.
+**理由**: 醫療資料涉及個人隱私與法規合規。任何資料外洩或安全漏洞可能導致法律責任與信任危機。
 
-### III. User Experience Consistency
+### III. 使用者體驗與可及性 (User Experience & Accessibility) - 不可協商
 
-User-facing interfaces MUST provide a consistent, predictable experience:
+系統必須提供所有使用者都能順利操作的介面：
 
-- **Design System**: All UI components MUST follow the established design system. Custom styles require explicit justification and design review.
-- **Accessibility**: MUST meet WCAG 2.1 Level AA standards. All interactive elements require keyboard navigation, screen reader support, and sufficient color contrast.
-- **Response Time**: User actions MUST provide feedback within 100ms. Operations taking >1 second MUST show progress indicators.
-- **Error Messages**: User-facing errors MUST be clear, actionable, and non-technical. Format: "What happened" + "Why" + "What to do next."
-- **Progressive Enhancement**: Core functionality MUST work without JavaScript. Enhanced features can require JavaScript but MUST degrade gracefully.
-- **Mobile-First**: All interfaces MUST be fully functional on mobile devices (touch targets ≥44px, responsive layouts, appropriate font sizes).
-- **Consistent Patterns**: Use established patterns for common actions (navigation, forms, modals). Introducing new patterns requires UX review.
+- **醫療專業友善**: 介面設計必須符合醫療專業人員的操作習慣與認知模式。
+- **無障礙設計**: 必須符合 WCAG 2.1 Level AA 標準，支援螢幕閱讀器與鍵盤導航。
+- **多裝置相容**: 支援桌面、平板與行動裝置，確保測驗體驗一致。
+- **直覺式導航**: 測驗流程必須清晰明確，避免使用者迷失或誤操作。
+- **錯誤處理友善**: 錯誤訊息必須清楚說明問題與解決方法，避免技術術語。
+- **載入時間優化**: 圖片載入與頁面轉換必須快速，避免影響測驗專注度。
+- **視覺疲勞考量**: 長時間測驗的介面必須考慮視覺疲勞，提供適當的休息提示。
+- **操作確認機制**: 重要操作（提交答案、結束測驗）必須提供確認步驟。
 
-**Rationale**: Consistency reduces cognitive load and learning time. Accessible design is inclusive design and often improves usability for all users. Users should never feel confused or stuck.
+**理由**: 良好的使用者體驗確保測驗結果的準確性。複雜或令人困惑的介面可能影響受測者表現，導致測驗結果失真。
 
-### IV. Performance Requirements
+### IV. 系統效能與可靠性 (System Performance & Reliability) - 不可協商
 
-System performance directly impacts user satisfaction and operational costs:
+醫療級系統必須確保高可用性與穩定效能：
 
-- **Response Time Targets**:
-  - API endpoints: p95 <200ms, p99 <500ms
-  - Page load (initial): <2 seconds on 3G network
-  - Page load (subsequent): <500ms
-- **Resource Limits**:
-  - Backend memory: <512MB per service instance
-  - Frontend bundle: <500KB initial load (gzipped), <100KB per route
-  - Database queries: <100ms for simple queries, <500ms for complex aggregations
-- **Scalability Requirements**:
-  - MUST support 10x current user load without degradation
-  - Database queries MUST use appropriate indexes
-  - MUST implement caching for frequently accessed, rarely changing data
-- **Monitoring Required**: All performance-critical paths MUST have metrics, logging, and alerting configured. Performance regressions >10% trigger investigation.
-- **Performance Testing**: Load testing required for all endpoints expected to handle >100 requests/second or serve >1000 concurrent users.
+- **服務可用性**: 系統可用性必須達到 99.9% 以上，計劃性維護除外。
+- **回應時間標準**:
+  - 頁面載入: 初次載入 <3 秒，後續載入 <1 秒
+  - API 回應: p95 <300ms, p99 <1 秒
+  - 圖片載入: <2 秒（含醫學圖片）
+- **並發使用者支援**: 必須支援 1000 名並發使用者同時進行測驗。
+- **資料庫效能**: 查詢回應時間 <200ms，複雜報表生成 <5 秒。
+- **自動擴展**: 系統必須能在高負載時自動擴展資源。
+- **故障恢復**: 系統故障後必須在 15 分鐘內恢復服務。
+- **測驗進度保護**: 測驗過程中的暫時性中斷不得影響已完成的進度。
+- **效能監控**: 所有關鍵效能指標必須即時監控與告警。
 
-**Rationale**: Performance is a feature, not an afterthought. Slow systems frustrate users and increase operational costs. Early performance testing prevents expensive rewrites.
+**理由**: 醫學測驗通常有時間限制，系統效能問題可能影響測驗公平性。高可用性確保測驗能夠按計劃進行。
 
-### V. 文件語言標準 (不可協商)
+### V. 多語言開發與用戶介面標準 (Multi-language Development & User Interface Standards) - 不可協商
 
-所有面向規格說明、規劃與終端使用者的專案文件必須以繁體中文（zh-TW）撰寫：
+開發文件與用戶介面必須分別使用適當的語言，確保開發效率與用戶體驗：
 
-- **功能規格書 (spec.md)**：所有功能規格、使用者故事、驗收條件與需求必須使用繁體中文撰寫。
-- **實作計畫 (plan.md)**：所有技術背景、架構決策與實作計畫必須使用繁體中文撰寫。
-- **使用者面向文件**：所有使用者指南、快速入門文件、API 文件與說明內容必須使用繁體中文撰寫。
-- **任務描述 (tasks.md)**：所有任務清單、描述與驗收條件必須使用繁體中文撰寫。
-- **使用者面向程式碼註解**：供終端使用者閱讀或用於文件產生的註解必須使用繁體中文。
-- **錯誤訊息**：所有使用者面向的錯誤訊息、警告與通知必須使用繁體中文。
-- **程式碼例外規則**：
-  - 原始碼（變數名稱、函式名稱、類別名稱）可使用英文以確保技術清晰度與國際協作。
-  - 解釋實作細節的內部技術註解可使用英文。
-  - 第三方函式庫文件引用可保留原始語言。
-  - Git commit 訊息可使用英文以利國際團隊協作。
+#### 開發團隊內部文件（繁體中文）
+- **功能規格書 (spec.md)**: 所有功能規格、使用者故事、驗收條件與需求必須使用繁體中文撰寫，專有名詞需標註日文原文。
+- **實作計畫 (plan.md)**: 所有技術背景、架構決策與實作計畫必須使用繁體中文撰寫。
+- **任務描述 (tasks.md)**: 所有任務清單、描述與驗收條件必須使用繁體中文撰寫。
+- **開發者文件**: 內部技術文件、API 說明、部署指南等開發相關文件使用繁體中文。
 
-**理由**：一致使用繁體中文確保主要使用者群的可及性，減少翻譯錯誤，並維持文化與語言的適當性。在程式碼（技術性／英文）與文件（使用者導向／繁體中文）之間建立清晰的語言界線，可防止混淆同時維持國際開發標準。
+#### 用戶介面與面向最終用戶內容（日文）
+- **介面文字**: 所有顯示在介面上的文字內容必須使用日文，嚴格遵照客戶指定的日文內容。
+- **錯誤訊息**: 所有用戶面向的錯誤訊息、警告與通知必須使用日文。
+- **系統通知**: 包含 OTP 驗證郵件、測驗結果通知等所有系統發送的訊息必須使用日文。
+- **用戶指南**: 最終用戶操作手冊、說明頁面等必須使用日文。
+- **測驗內容**: 測驗介面、說明文字、結果報告等必須使用日文。
 
-## Performance Standards
+#### 醫學術語與專有名詞處理
+- **規格書標註**: 醫學相關專有名詞在規格書中必須同時標示繁體中文與日文原文（例：細胞分類 / 細胞分類）。
+- **術語對照表**: 維護醫學術語的中日對照表，確保翻譯一致性。
+- **客戶確認**: 所有醫學術語的日文使用必須經過客戶確認，避免專業用詞錯誤。
 
-### Measurement & Monitoring
+#### 程式碼與技術文件例外規則
+- **原始碼**: 變數名稱、函式名稱、類別名稱使用英文以確保技術清晰度。
+- **內部技術註解**: 解釋實作細節的程式碼註解可使用英文或繁體中文。
+- **第三方整合**: 第三方函式庫文件引用保留原始語言。
+- **版本控制**: Git commit 訊息使用英文以利國際協作。
 
-- **Real User Monitoring (RUM)**: Track actual user experience metrics (page load time, interaction latency, error rates).
-- **Synthetic Monitoring**: Automated checks run every 5 minutes to catch issues before users do.
-- **Performance Budget**: Each feature proposal MUST include estimated performance impact. Budget violations require optimization before merge.
-- **Baseline Metrics**: Establish baseline performance metrics before each release. Post-release monitoring compares against baseline.
+#### 品質保證要求
+- **雙重檢查**: 所有日文介面文字必須經過母語人士或客戶確認。
+- **一致性檢查**: 定期檢查術語使用的一致性，避免同一概念出現不同日文表達。
+- **本地化測試**: 介面文字必須在實際環境中測試，確保顯示正確且符合日文使用習慣。
 
-### Optimization Guidelines
+**理由**: 台灣開發團隊使用繁體中文進行內部溝通可提高開發效率與準確性。日本最終用戶與客戶使用日文介面確保系統的可用性與專業性。明確的語言分工避免混淆並維持專業標準。
 
-- **Premature Optimization**: Avoid optimizing without evidence. Profile first, optimize hot paths only.
-- **When to Optimize**: Optimize when metrics show user impact or approach limits (>150ms API response, >3s page load, >70% resource usage).
-- **Optimization Process**: (1) Measure → (2) Identify bottleneck → (3) Optimize → (4) Measure again → (5) Document impact.
+### VI. OTP 與電子郵件安全要求 (OTP & Email Security Requirements) - 不可協商
 
-## Quality Assurance Process
+一次性密碼系統必須確保身份驗證的安全性與可靠性：
 
-### Pre-Merge Gates (Automated)
+- **OTP 產生安全性**: 一次性密碼必須使用密碼學安全的隨機數產生器，長度至少 6 位數字。
+- **有效期限控制**: OTP 有效期限不得超過 10 分鐘，過期後必須重新產生。
+- **重試限制**: 同一電子郵件地址的 OTP 驗證失敗超過 5 次後，必須實施暫時鎖定（30 分鐘）。
+- **發送頻率限制**: 同一電子郵件地址的 OTP 發送頻率限制為每分鐘最多 1 次。
+- **電子郵件傳輸安全**: 所有 OTP 電子郵件必須使用 TLS 加密傳輸。
+- **郵件內容安全**: OTP 郵件不得包含完整的測驗連結，僅提供驗證碼。
+- **會話管理**: OTP 驗證成功後的會話必須設定適當的過期時間與安全 Cookie。
+- **裝置綁定**: 團體測驗的管理者 OTP 驗證必須考慮裝置與瀏覽器的變更。
 
-- All unit tests pass (required)
-- All integration tests pass (required)
-- Code coverage ≥80% (required)
-- Linting passes with zero errors (required)
-- Type checking passes (required)
-- Security scan shows no high/critical vulnerabilities (required)
+**理由**: OTP 是防止測驗作弊與身份冒用的關鍵機制。安全的 OTP 系統確保測驗結果的可信度。
 
-### Pre-Merge Gates (Manual)
+### VII. 付款安全與合規 (Payment Security & Compliance) - 不可協商
 
-- Code review approval from qualified reviewer (required)
-- Design review for UI changes (required for user-facing changes)
-- Performance review for high-traffic endpoints (required for API changes)
-- Accessibility review for interactive elements (required for UI changes)
+Stripe 付款整合必須確保金融交易的安全性與合規性：
 
-### Definition of Done
+- **PCI 合規**: 必須遵循 PCI DSS 標準，不得在本地系統儲存信用卡資料。
+- **Stripe 整合安全**: 使用 Stripe 官方 SDK，確保 API 金鑰的安全管理。
+- **交易記錄**: 所有付款交易必須記錄完整的稽核軌跡，包含時間、金額、狀態與測驗資訊。
+- **退款機制**: 必須提供退款機制與相應的業務流程。
+- **重複扣款防護**: 防止使用者意外重複購買或重複扣款。
+- **交易狀態同步**: 系統必須與 Stripe 交易狀態保持同步，處理各種付款狀態。
+- **詐欺偵測**: 整合 Stripe 的詐欺偵測機制，監控異常交易。
+- **合規報告**: 生成符合法規要求的財務與交易報告。
 
-A feature is not complete until:
+**理由**: 付款系統的安全性直接影響使用者信任與法規合規。任何付款漏洞可能導致財務損失與法律責任。
 
-1. All tests written and passing
-2. Code reviewed and approved
-3. Documentation updated (API docs, user guides, etc.)
-4. Performance validated against requirements
-5. Accessibility validated (automated + manual testing)
-6. Monitoring/logging configured
-7. Deployed to staging and validated
-8. Product owner sign-off
+### VIII. 測驗評估完整性 (Testing Assessment Integrity) - 不可協商
 
-## Governance
+確保測驗過程的公平性與結果的可信度：
 
-This constitution supersedes all other development practices and policies. All team members MUST understand and follow these principles.
+- **防作弊機制**: 實施技術手段防止測驗過程中的作弊行為（如截圖、複製、外部輔助）。
+- **時間限制強制**: 測驗時間限制必須嚴格執行，不允許延長或暫停。
+- **瀏覽器安全**: 測驗過程中限制瀏覽器的某些功能（如右鍵、開發者工具）。
+- **題目隨機性**: 確保每次測驗的題目與圖片組合都是隨機的，但同一團體測驗的隨機性必須一致。
+- **答案提交確認**: 每個答案的提交必須有明確的確認機制，防止誤操作。
+- **測驗環境監控**: 記錄測驗過程中的異常行為（如長時間無操作、頻繁切換視窗）。
+- **結果計算透明**: 測驗結果的計算邏輯必須透明且可稽核。
+- **爭議處理機制**: 提供測驗結果爭議的申訴與處理機制。
 
-### Amendment Process
+**理由**: 測驗完整性是醫學能力評估的基礎。任何作弊或不公平情況都會影響評估結果的可信度與公平性。
 
-- **Proposal**: Any team member can propose amendments with justification.
-- **Review Period**: Minimum 5 business days for team review and discussion.
-- **Approval**: Requires consensus from at least 75% of active team members.
-- **Migration Plan**: Breaking changes require documented migration path and timeline.
-- **Version Update**: Follow semantic versioning (MAJOR.MINOR.PATCH).
+## 效能標準 (Performance Standards)
 
-### Compliance & Enforcement
+### 測量與監控 (Measurement & Monitoring)
 
-- All code reviews MUST verify constitution compliance.
-- CI/CD pipelines enforce automated gates.
-- Quarterly constitution review meetings to assess effectiveness.
-- Violations require either immediate fix or documented exception with expiration date.
+- **真實使用者監控 (RUM)**: 追蹤實際使用者體驗指標（頁面載入時間、互動延遲、錯誤率）。
+- **合成監控**: 每 5 分鐘自動檢查，在使用者發現問題前進行偵測。
+- **效能預算**: 每個功能提案必須包含預估的效能影響。預算超支需要在合併前進行優化。
+- **基準指標**: 每次發布前建立基準效能指標。發布後監控與基準比較。
 
-### Exception Handling
+### 優化指導原則 (Optimization Guidelines)
 
-- Exceptions require written justification and time-bound approval.
-- Document reason, impact, remediation plan, and expiration date.
-- Exceptions tracked in `.specify/memory/exceptions.md` (create if needed).
-- Expired exceptions treated as violations.
+- **避免過早優化**: 在沒有證據前避免優化。先進行效能分析，只優化熱點路徑。
+- **何時優化**: 當指標顯示使用者影響或接近限制時進行優化（>300ms API 回應、>3 秒頁面載入、>70% 資源使用）。
+- **優化流程**: (1) 測量 → (2) 識別瓶頸 → (3) 優化 → (4) 再次測量 → (5) 記錄影響。
 
-### Living Document
+## 品質保證流程 (Quality Assurance Process)
 
-- This constitution is reviewed quarterly and amended as needed.
-- Amendments reflect lessons learned and evolving project needs.
-- All team members contribute to keeping principles practical and relevant.
+### 合併前自動檢核 (Pre-Merge Automated Gates)
 
-**版本**: 1.1.1 | **批准日期**: 2025-10-30 | **最後修訂**: 2025-10-31
+- 所有單元測試通過（必要）
+- 所有整合測試通過（必要）
+- 程式碼覆蓋率 ≥80%（必要）
+- 程式碼檢查零錯誤（必要）
+- 型別檢查通過（必要）
+- 安全掃描無高危險或嚴重漏洞（必要）
+- OTP 安全性測試通過（必要）
+- 付款流程安全測試通過（必要）
+
+### 合併前人工檢核 (Pre-Merge Manual Gates)
+
+- 合格審查者的程式碼審查批准（必要）
+- UI 變更的設計審查（面向使用者變更時必要）
+- 高流量端點的效能審查（API 變更時必要）
+- 互動元素的可及性審查（UI 變更時必要）
+- 醫學資料處理的合規審查（資料變更時必要）
+
+### 完成定義 (Definition of Done)
+
+功能完成的標準：
+
+1. 所有測試撰寫完成並通過
+2. 程式碼審查完成並核准
+3. 文件更新完成（API 文件、使用者指南等）
+4. 效能驗證符合要求
+5. 可及性驗證完成（自動化 + 人工測試）
+6. 安全性驗證完成（OTP、付款、資料保護）
+7. 監控/記錄設定完成
+8. 部署至測試環境並驗證
+9. 產品負責人簽核
+
+## 治理 (Governance)
+
+本憲章優先於所有其他開發實務與政策。所有團隊成員必須理解並遵循這些原則。
+
+### 修訂程序 (Amendment Process)
+
+- **提案**: 任何團隊成員都可以提出修訂案並提供理由。
+- **審查期間**: 最少 5 個工作日供團隊審查與討論。
+- **核准**: 需要至少 75% 活躍團隊成員的共識。
+- **遷移計畫**: 破壞性變更需要文件化的遷移路徑與時間表。
+- **版本更新**: 遵循語意化版本（MAJOR.MINOR.PATCH）。
+
+### 合規與執行 (Compliance & Enforcement)
+
+- 所有程式碼審查必須驗證憲章合規性。
+- CI/CD 流水線強制執行自動檢核。
+- 每季憲章審查會議評估有效性。
+- 違規行為需要立即修正或文件化例外（含到期日）。
+
+### 例外處理 (Exception Handling)
+
+- 例外情況需要書面理由與時限核准。
+- 記錄原因、影響、補救計畫與到期日。
+- 例外追蹤在 `.specify/memory/exceptions.md`（如需要則建立）。
+- 過期例外視為違規處理。
+
+### 活文件 (Living Document)
+
+- 本憲章每季審查並視需要修訂。
+- 修訂反映經驗學習與專案需求演進。
+- 所有團隊成員貢獻保持原則實用且相關。
+
+**版本**: 2.1.0 | **批准日期**: 2025-10-30 | **最後修訂**: 2025-11-03
