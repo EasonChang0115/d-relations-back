@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>測驗連結</title>
+  </head>
+  <body>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>您的測驗已準備好</h2>
+      <p>您好 {{name}},</p>
+      <p>感謝您購買我們的付費版測驗。您現在可以開始進行 20 題的細胞識別測驗。</p>
+      <p style="margin: 30px 0;">
+        <a
+          href="{{examUrl}}"
+          style="
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+          "
+        >
+          開始測驗
+        </a>
+      </p>
+      <p>或複製此連結在瀏覽器中打開：</p>
+      <p style="word-break: break-all;">{{examUrl}}</p>
+      <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 20px 0;">
+        <p style="margin: 0;">
+          <strong>注意事項：</strong>
+        </p>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+          <li>此測驗有效期限為 30 天</li>
+          <li>完成後您將獲得詳細的分析報告</li>
+          <li>您可以下載 PDF 版本的報告</li>
+        </ul>
+      </div>
+      <p style="color: #666; font-size: 14px;">
+        如有任何問題，請聯繫我們的客服團隊。
+      </p>
+      <hr />
+      <p style="font-size: 12px; color: #999;">
+        © 2025 醫學細胞識別能力測驗平台。版權所有。
+      </p>
+    </div>
+  </body>
+</html>

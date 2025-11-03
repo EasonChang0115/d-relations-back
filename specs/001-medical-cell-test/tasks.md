@@ -245,33 +245,33 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 資料實體
 
-- [ ] T075 [P] [US3] 建立 PaymentRecord 實體 (backend/src/modules/payments/entities/payment-record.entity.ts)，記錄 Stripe 交易資訊
-- [ ] T076 [P] [US3] 建立 OTPVerification 實體 (backend/src/modules/otp/entities/otp-verification.entity.ts)，包含驗證碼、嘗試次數、鎖定狀態
-- [ ] T077 [P] [US3] 建立 Session 實體 (backend/src/modules/auth/entities/session.entity.ts)，記錄裝置指紋與過期時間
+- [x] T075 [P] [US3] 建立 PaymentRecord 實體 (backend/src/modules/payments/entities/payment-record.entity.ts)，記錄 Stripe 交易資訊
+- [x] T076 [P] [US3] 建立 OTPVerification 實體 (backend/src/modules/otp/entities/otp-verification.entity.ts)，包含驗證碼、嘗試次數、鎖定狀態
+- [x] T077 [P] [US3] 建立 Session 實體 (backend/src/modules/auth/entities/session.entity.ts)，記錄裝置指紋與過期時間
 
 ### DTO 與驗證
 
-- [ ] T078 [P] [US3] 建立 Payment DTO (backend/src/modules/payments/dto/create-checkout.dto.ts, payment-response.dto.ts)
-- [ ] T079 [P] [US3] 建立 OTP DTO (backend/src/modules/otp/dto/send-otp.dto.ts, verify-otp.dto.ts)
+- [x] T078 [P] [US3] 建立 Payment DTO (backend/src/modules/payments/dto/create-checkout.dto.ts, payment-response.dto.ts)
+- [x] T079 [P] [US3] 建立 OTP DTO (backend/src/modules/otp/dto/send-otp.dto.ts, verify-otp.dto.ts)
 
 ### Stripe 整合
 
-- [ ] T080 [US3] 實作 PaymentsService (backend/src/modules/payments/payments.service.ts)，整合 Stripe SDK 建立 Checkout Session
+- [x] T080 [US3] 實作 PaymentsService (backend/src/modules/payments/payments.service.ts)，整合 Stripe SDK 建立 Checkout Session
 - [ ] T081 [US3] 實作 Stripe Webhook 處理 (PaymentsService - handleWebhook 方法)，驗證簽章 (參考 research.md R3)
 - [ ] T082 [US3] 實作付款成功後發送郵件邏輯 (MailService - sendExamLink 方法)
 
 ### OTP 驗證機制
 
-- [ ] T083 [US3] 實作 OtpService (backend/src/modules/otp/otp.service.ts)，生成 6 位數 OTP (10 分鐘有效)
+- [x] T083 [US3] 實作 OtpService (backend/src/modules/otp/otp.service.ts)，生成 6 位數 OTP (10 分鐘有效)
 - [ ] T084 [US3] 實作 OTP 發送邏輯 (OtpService - sendOtp 方法)，整合郵件服務與 Redis 速率限制 (60 秒)
 - [ ] T085 [US3] 實作 OTP 驗證邏輯 (OtpService - verifyOtp 方法)，檢查嘗試次數 (10 次) 與鎖定狀態 (5 分鐘)
 - [ ] T086 [US3] 實作 OTP 驗證成功後 Session 建立 (AuthService - createSession 方法)，10 天有效期限
 
 ### 郵件服務
 
-- [ ] T087 [P] [US3] 建立 MailService (backend/src/modules/mail/mail.service.ts)，整合 nodemailer 與 AWS SES
-- [ ] T088 [P] [US3] 建立 OTP 郵件範本 (backend/src/modules/mail/templates/otp-verification.hbs)，支援多語言
-- [ ] T089 [P] [US3] 建立測驗連結郵件範本 (backend/src/modules/mail/templates/exam-link.hbs)
+- [x] T087 [P] [US3] 建立 MailService (backend/src/modules/mail/mail.service.ts)，整合 nodemailer 與 AWS SES
+- [x] T088 [P] [US3] 建立 OTP 郵件範本 (backend/src/modules/mail/templates/otp-verification.hbs)，支援多語言
+- [x] T089 [P] [US3] 建立測驗連結郵件範本 (backend/src/modules/mail/templates/exam-link.hbs)
 - [ ] T090 [US3] 實作郵件發送 Queue (MailService)，使用 Bull Queue + Redis (參考 research.md R2)
 
 ### 進階報表功能
@@ -289,15 +289,15 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### API 端點
 
-- [ ] T098 [US3] 實作 PaymentsController (backend/src/modules/payments/payments.controller.ts)，端點: POST /api/payments/create-checkout, POST /api/payments/webhook
-- [ ] T099 [US3] 實作 OtpController (backend/src/modules/otp/otp.controller.ts)，端點: POST /api/otp/send, POST /api/otp/verify
+- [x] T098 [US3] 實作 PaymentsController (backend/src/modules/payments/payments.controller.ts)，端點: POST /api/payments/create-checkout, POST /api/payments/webhook
+- [x] T099 [US3] 實作 OtpController (backend/src/modules/otp/otp.controller.ts)，端點: POST /api/otp/send, POST /api/otp/verify
 - [ ] T100 [US3] 擴充 ReportsController (backend/src/modules/reports/reports.controller.ts)，新增 GET /api/reports/:id/pdf 端點
 
 ### 模組整合
 
-- [ ] T101 [US3] 建立 PaymentsModule (backend/src/modules/payments/payments.module.ts)
-- [ ] T102 [US3] 建立 OtpModule (backend/src/modules/otp/otp.module.ts)
-- [ ] T103 [US3] 建立 MailModule (backend/src/modules/mail/mail.module.ts)
+- [x] T101 [US3] 建立 PaymentsModule (backend/src/modules/payments/payments.module.ts)
+- [x] T102 [US3] 建立 OtpModule (backend/src/modules/otp/otp.module.ts)
+- [x] T103 [US3] 建立 MailModule (backend/src/modules/mail/mail.module.ts)
 - [ ] T104 [US3] 建立 StorageModule (backend/src/modules/storage/storage.module.ts)，整合 AWS S3
 
 ### 會話管理
