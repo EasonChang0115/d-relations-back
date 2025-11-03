@@ -1,1 +1,1 @@
-/speckit.implement
+/speckit.implement 幫我把 swagger example 的部分也都要一起補上 

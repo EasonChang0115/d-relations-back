@@ -20,9 +20,26 @@ export class GroupExamTakerController {
   ) {}
 
   @Get(':batchToken/start')
-  @ApiOperation({ summary: '開始群組測驗' })
-  @ApiResponse({ status: 200, description: '測驗已開始' })
+  @ApiOperation({ 
+    summary: '開始群組測驗',
+    description: '受測者使用邀請令牌開始群組測驗'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: '測驗已開始',
+    example: {
+      examId: '550e8400-e29b-41d4-a716-446655440000',
+      batchToken: 'batch_token_xyz789',
+      invitationToken: 'invitation_abc123',
+      exam: {
+        id: '550e8400-e29b-41d4-a716-446655440000',
+        status: 'in_progress',
+        totalQuestions: 30
+      }
+    }
+  })
   @ApiResponse({ status: 404, description: '批次不存在' })
+  @ApiResponse({ status: 403, description: '批次已過期或邀請令牌無效' })
   async startGroupExam(
     @Param('batchToken') batchToken: string,
     @Query('token') invitationToken: string,
@@ -66,8 +83,22 @@ export class GroupExamTakerController {
   }
 
   @Post(':examId/submit-answer')
-  @ApiOperation({ summary: '提交答案' })
-  @ApiResponse({ status: 200, description: '答案已提交' })
+  @ApiOperation({ 
+    summary: '提交群組測驗答案',
+    description: '受測者提交單題答案'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: '答案已提交',
+    example: {
+      success: true,
+      answerId: '789e4567-e89b-12d3-a456-426614174000',
+      isCorrect: true,
+      questionIndex: 5,
+      totalQuestions: 30
+    }
+  })
+  @ApiResponse({ status: 404, description: '測驗不存在' })
   async submitAnswer(
     @Param('examId') examId: string,
     @Body() submitData: { questionId: string; userAnswer: string; timeSpentSeconds: number },
@@ -92,8 +123,22 @@ export class GroupExamTakerController {
   }
 
   @Post(':examId/complete')
-  @ApiOperation({ summary: '完成測驗' })
-  @ApiResponse({ status: 200, description: '測驗已完成' })
+  @ApiOperation({ 
+    summary: '完成群組測驗',
+    description: '受測者完成所有題目後提交測驗'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: '測驗已完成',
+    example: {
+      success: true,
+      examId: '550e8400-e29b-41d4-a716-446655440000',
+      correctAnswers: 25,
+      totalQuestions: 30,
+      accuracyRate: 83.33
+    }
+  })
+  @ApiResponse({ status: 404, description: '測驗不存在' })
   async completeExam(
     @Param('examId') examId: string,
     @Body() completeData: { timeSpentSeconds: number },

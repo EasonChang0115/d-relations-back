@@ -15,15 +15,25 @@ export class ReportsController {
   ) {}
 
   @Post('exam/:examId')
-  @ApiOperation({ summary: '生成測驗報表' })
-  @ApiResponse({ status: 201, description: '報表已生成', type: ReportResponseDto })
+  @ApiOperation({ 
+    summary: '生成測驗報表',
+    description: '根據測驗結果生成完整的統計報表'
+  })
+  @ApiResponse({ 
+    status: 201, 
+    description: '報表已生成', 
+    type: ReportResponseDto
+  })
   @ApiResponse({ status: 404, description: '測驗不存在' })
   async generateReport(@Param('examId') examId: string): Promise<ReportResponseDto> {
     return await this.reportsService.generateReport(examId);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '取得報表' })
+  @ApiOperation({ 
+    summary: '取得報表',
+    description: '取得指定 ID 的報表詳細資訊'
+  })
   @ApiResponse({ status: 200, description: '成功', type: ReportResponseDto })
   @ApiResponse({ status: 404, description: '報表不存在' })
   @ApiResponse({ status: 403, description: '報表已過期' })
@@ -32,7 +42,10 @@ export class ReportsController {
   }
 
   @Get('exam/:examId')
-  @ApiOperation({ summary: '取得測驗的報表' })
+  @ApiOperation({ 
+    summary: '取得測驗的報表',
+    description: '根據測驗 ID 取得對應的報表'
+  })
   @ApiResponse({ status: 200, description: '成功', type: ReportResponseDto })
   @ApiResponse({ status: 404, description: '報表不存在' })
   @ApiResponse({ status: 403, description: '報表已過期' })
@@ -41,8 +54,11 @@ export class ReportsController {
   }
 
   @Get(':id/pdf')
-  @ApiOperation({ summary: '下載報表PDF' })
-  @ApiResponse({ status: 200, description: 'PDF報表' })
+  @ApiOperation({ 
+    summary: '下載報表 PDF',
+    description: '產生並下載報表的 PDF 檔案'
+  })
+  @ApiResponse({ status: 200, description: 'PDF 報表' })
   @ApiResponse({ status: 404, description: '報表不存在' })
   async getPdfReport(@Param('id') id: string): Promise<string> {
     // Get report to ensure it exists
@@ -63,8 +79,22 @@ export class ReportsController {
   }
 
   @Get(':id/recommendations')
-  @ApiOperation({ summary: '取得推薦講座' })
-  @ApiResponse({ status: 200, description: '推薦講座列表' })
+  @ApiOperation({ 
+    summary: '取得推薦講座',
+    description: '根據測驗結果推薦相關的學習講座'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: '推薦講座列表',
+    example: [
+      {
+        id: 'lecture_001',
+        title: '嗜中性球辨識技巧',
+        cellType: 'neutrophil',
+        duration: '30 分鐘'
+      }
+    ]
+  })
   @ApiResponse({ status: 404, description: '報表不存在' })
   async getRecommendations(
     @Param('id') id: string,
@@ -73,8 +103,24 @@ export class ReportsController {
   }
 
   @Get(':id/answer-distribution/:questionId')
-  @ApiOperation({ summary: '取得答案分佈' })
-  @ApiResponse({ status: 200, description: '答案分佈統計' })
+  @ApiOperation({ 
+    summary: '取得答案分佈',
+    description: '查詢特定題目的答案選擇分佈統計'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: '答案分佈統計',
+    example: {
+      questionId: '123e4567-e89b-12d3-a456-426614174000',
+      totalAnswers: 100,
+      distribution: {
+        A: 25,
+        B: 45,
+        C: 20,
+        D: 10
+      }
+    }
+  })
   async getAnswerDistribution(
     @Param('questionId') questionId: string,
   ): Promise<any> {
