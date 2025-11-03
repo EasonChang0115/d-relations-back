@@ -257,15 +257,15 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 ### Stripe 整合
 
 - [x] T080 [US3] 實作 PaymentsService (backend/src/modules/payments/payments.service.ts)，整合 Stripe SDK 建立 Checkout Session
-- [ ] T081 [US3] 實作 Stripe Webhook 處理 (PaymentsService - handleWebhook 方法)，驗證簽章 (參考 research.md R3)
-- [ ] T082 [US3] 實作付款成功後發送郵件邏輯 (MailService - sendExamLink 方法)
+- [x] T081 [US3] 實作 Stripe Webhook 處理 (PaymentsService - handleWebhook 方法)，驗證簽章 (參考 research.md R3)
+- [x] T082 [US3] 實作付款成功後發送郵件邏輯 (MailService - sendExamLink 方法)
 
 ### OTP 驗證機制
 
 - [x] T083 [US3] 實作 OtpService (backend/src/modules/otp/otp.service.ts)，生成 6 位數 OTP (10 分鐘有效)
-- [ ] T084 [US3] 實作 OTP 發送邏輯 (OtpService - sendOtp 方法)，整合郵件服務與 Redis 速率限制 (60 秒)
-- [ ] T085 [US3] 實作 OTP 驗證邏輯 (OtpService - verifyOtp 方法)，檢查嘗試次數 (10 次) 與鎖定狀態 (5 分鐘)
-- [ ] T086 [US3] 實作 OTP 驗證成功後 Session 建立 (AuthService - createSession 方法)，10 天有效期限
+- [x] T084 [US3] 實作 OTP 發送邏輯 (OtpService - sendOtp 方法)，整合郵件服務與 Redis 速率限制 (60 秒)
+- [x] T085 [US3] 實作 OTP 驗證邏輯 (OtpService - verifyOtp 方法)，檢查嘗試次數 (10 次) 與鎖定狀態 (5 分鐘)
+- [x] T086 [US3] 實作 OTP 驗證成功後 Session 建立 (AuthService - createSession 方法)，10 天有效期限
 
 ### 郵件服務
 

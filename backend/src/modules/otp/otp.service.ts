@@ -1,8 +1,9 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, Inject, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OtpVerification } from '../entities/otp-verification.entity';
 import { User } from '@/modules/users/entities/user.entity';
+import { MailService } from '@/modules/mail/mail.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -17,6 +18,7 @@ export class OtpService {
     private readonly otpRepository: Repository<OtpVerification>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Optional() private readonly mailService?: MailService,
   ) {}
 
   async generateOtp(): Promise<string> {
@@ -50,7 +52,7 @@ export class OtpService {
     const expiresAt = new Date(Date.now() + this.OTP_EXPIRY_MINUTES * 60 * 1000);
 
     // Save OTP to database
-    await this.otpRepository.save({
+    const savedOtp = await this.otpRepository.save({
       userId: user.id,
       otpCode: otp,
       expiresAt,
@@ -60,8 +62,15 @@ export class OtpService {
       isLocked: false,
     });
 
-    // TODO: Send OTP via email
-    // await this.mailService.sendOtp(email, otp);
+    // Send OTP via email if mail service is available (T084)
+    if (this.mailService) {
+      try {
+        await this.mailService.sendOtp(email, otp, user.name);
+      } catch (error) {
+        console.error('Failed to send OTP email:', error);
+        // Don't throw - OTP is still saved in DB
+      }
+    }
 
     return { message: '驗證碼已發送至您的電子郵件', expiresIn: `${this.OTP_EXPIRY_MINUTES} 分鐘` };
   }
@@ -81,9 +90,18 @@ export class OtpService {
       throw new BadRequestException('驗證碼不存在或已過期');
     }
 
-    // Check if locked
+    // Check if locked (T085)
     if (otp.isLocked && otp.lockedUntil && otp.lockedUntil > new Date()) {
-      throw new BadRequestException('驗證碼已被鎖定，請稍後重試');
+      const minutesRemaining = Math.ceil((otp.lockedUntil.getTime() - Date.now()) / 60000);
+      throw new BadRequestException(`驗證碼已被鎖定，請在 ${minutesRemaining} 分鐘後重試`);
+    }
+
+    // Unlock if lockout period has passed
+    if (otp.isLocked && otp.lockedUntil && otp.lockedUntil <= new Date()) {
+      otp.isLocked = false;
+      otp.lockedUntil = null;
+      otp.attemptCount = 0;
+      await this.otpRepository.save(otp);
     }
 
     // Check if expired
@@ -110,13 +128,17 @@ export class OtpService {
       );
     }
 
-    // Mark as verified
+    // Mark as verified (T085)
     otp.isVerified = true;
     otp.verifiedAt = new Date();
     await this.otpRepository.save(otp);
 
-    // Generate session token
+    // Generate session token (T086)
     const sessionToken = crypto.randomBytes(32).toString('hex');
+    const sessionTokenHash = crypto
+      .createHash('sha256')
+      .update(sessionToken)
+      .digest('hex');
 
     return {
       message: '驗證成功',

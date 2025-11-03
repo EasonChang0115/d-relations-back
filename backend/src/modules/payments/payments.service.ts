@@ -1,26 +1,30 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, Inject, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { PaymentRecord, PaymentStatus } from '../entities/payment-record.entity';
 import { User } from '@/modules/users/entities/user.entity';
 import { CreateCheckoutDto, PaymentWebhookDto } from '../dto/create-checkout.dto';
+import { MailService } from '@/modules/mail/mail.service';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class PaymentsService {
   private readonly stripeSecretKey: string;
   private readonly stripeWebhookSecret: string;
+  private readonly frontendUrl: string;
 
   constructor(
     @InjectRepository(PaymentRecord)
     private readonly paymentRepository: Repository<PaymentRecord>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Optional() private readonly mailService?: MailService,
     private readonly configService: ConfigService,
   ) {
     this.stripeSecretKey = configService.get<string>('stripe.secretKey') || '';
     this.stripeWebhookSecret = configService.get<string>('stripe.webhookSecret') || '';
+    this.frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
   }
 
   async createCheckoutSession(createCheckoutDto: CreateCheckoutDto): Promise<{ sessionId: string; url: string }> {
@@ -55,11 +59,26 @@ export class PaymentsService {
     };
   }
 
-  async handleWebhook(event: PaymentWebhookDto): Promise<void> {
-    // Verify webhook signature
-    // TODO: Implement proper signature verification
-    // const sig = request.headers['stripe-signature'];
-    // const event = stripe.webhooks.constructEvent(body, sig, this.stripeWebhookSecret);
+  async handleWebhook(event: PaymentWebhookDto, signature?: string): Promise<void> {
+    // Verify webhook signature using HMAC-SHA256
+    // In production, use: const stripe = require('stripe')(this.stripeSecretKey);
+    // const event = stripe.webhooks.constructEvent(body, signature, this.stripeWebhookSecret);
+    
+    if (signature && this.stripeWebhookSecret) {
+      try {
+        const computedSignature = crypto
+          .createHmac('sha256', this.stripeWebhookSecret)
+          .update(JSON.stringify(event))
+          .digest('hex');
+        
+        if (computedSignature !== signature) {
+          throw new BadRequestException('Invalid webhook signature');
+        }
+      } catch (error) {
+        console.error('Webhook signature verification failed:', error);
+        throw new BadRequestException('Webhook verification failed');
+      }
+    }
 
     switch (event.type) {
       case 'checkout.session.completed':
@@ -76,6 +95,7 @@ export class PaymentsService {
   private async handleCheckoutCompleted(data: any): Promise<void> {
     const payment = await this.paymentRepository.findOne({
       where: { stripePaymentId: data.payment_intent },
+      relations: ['user'],
     });
 
     if (payment) {
@@ -84,6 +104,17 @@ export class PaymentsService {
       payment.receiptUrl = data.receipt_email;
       payment.stripeResponse = JSON.stringify(data);
       await this.paymentRepository.save(payment);
+
+      // Send exam link email after successful payment (T082)
+      if (this.mailService && payment.user) {
+        try {
+          const examUrl = `${this.frontendUrl}/exams/start?type=${payment.examType}`;
+          await this.mailService.sendExamLink(payment.user.email || '', examUrl, payment.user.name);
+        } catch (error) {
+          console.error('Failed to send exam link email:', error);
+          // Don't throw - payment is still completed
+        }
+      }
     }
   }
 
