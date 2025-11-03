@@ -47,7 +47,7 @@ export class PaymentWebhookDto {
   @IsString()
   id!: string;
 
-  data: {
+  data!: {
     object: {
       id: string;
       status: string;
@@ -56,5 +56,5 @@ export class PaymentWebhookDto {
       customer_email: string;
       payment_intent: string;
     };
-  }!;
+  };
 }

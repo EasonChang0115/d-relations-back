@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bull';
 import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 
 import { AppController } from './app.controller';
@@ -50,6 +51,20 @@ import { RolesGuard } from './common/guards/roles.guard';
         limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
       },
     ]),
+
+    // Bull (Queue)
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: configService.get('REDIS_PORT', 6379),
+          password: configService.get('REDIS_PASSWORD'),
+          db: configService.get('REDIS_DB', 0),
+        },
+      }),
+      inject: [ConfigService],
+    }),
 
     // Feature Modules
     AuthModule,

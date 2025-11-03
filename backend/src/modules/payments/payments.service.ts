@@ -1,10 +1,16 @@
-import { Injectable, BadRequestException, UnauthorizedException, Inject, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { PaymentRecord, PaymentStatus } from '../entities/payment-record.entity';
+import { PaymentRecord, PaymentStatus } from './entities/payment-record.entity';
 import { User } from '@/modules/users/entities/user.entity';
-import { CreateCheckoutDto, PaymentWebhookDto } from '../dto/create-checkout.dto';
+import { CreateCheckoutDto, PaymentWebhookDto } from './dto/create-checkout.dto';
 import { MailService } from '@/modules/mail/mail.service';
 import { ExamsService } from '@/modules/exams/exams.service';
 import * as crypto from 'crypto';
@@ -20,16 +26,18 @@ export class PaymentsService {
     private readonly paymentRepository: Repository<PaymentRecord>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly configService: ConfigService,
     @Optional() private readonly mailService?: MailService,
     @Optional() private readonly examsService?: ExamsService,
-    private readonly configService: ConfigService,
   ) {
     this.stripeSecretKey = configService.get<string>('stripe.secretKey') || '';
     this.stripeWebhookSecret = configService.get<string>('stripe.webhookSecret') || '';
     this.frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
   }
 
-  async createCheckoutSession(createCheckoutDto: CreateCheckoutDto): Promise<{ sessionId: string; url: string }> {
+  async createCheckoutSession(
+    createCheckoutDto: CreateCheckoutDto,
+  ): Promise<{ sessionId: string; url: string }> {
     const user = await this.userRepository.findOne({
       where: { email: createCheckoutDto.email },
     });
@@ -65,14 +73,14 @@ export class PaymentsService {
     // Verify webhook signature using HMAC-SHA256
     // In production, use: const stripe = require('stripe')(this.stripeSecretKey);
     // const event = stripe.webhooks.constructEvent(body, signature, this.stripeWebhookSecret);
-    
+
     if (signature && this.stripeWebhookSecret) {
       try {
         const computedSignature = crypto
           .createHmac('sha256', this.stripeWebhookSecret)
           .update(JSON.stringify(event))
           .digest('hex');
-        
+
         if (computedSignature !== signature) {
           throw new BadRequestException('Invalid webhook signature');
         }

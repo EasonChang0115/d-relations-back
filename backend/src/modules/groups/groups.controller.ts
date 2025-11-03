@@ -1,8 +1,13 @@
 import { Controller, Post, Get, Param, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { GroupsService } from './services/groups.service';
-import { CreateBatchDto, ConfigureTakersDto, BatchResponseDto, BatchStatusDto } from './dto/batch.dto';
-import { JwtGuard } from '@/common/guards/jwt.guard';
+import {
+  CreateBatchDto,
+  ConfigureTakersDto,
+  BatchResponseDto,
+  BatchStatusDto,
+} from './dto/batch.dto';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 
 @ApiTags('groups')
@@ -11,7 +16,7 @@ export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Post('batches')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '建立群組測驗批次' })
   @ApiResponse({ status: 201, description: '批次已建立', type: BatchResponseDto })
@@ -24,7 +29,7 @@ export class GroupsController {
   }
 
   @Post('batches/:id/configure')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '設定批次受測者' })
   @ApiResponse({ status: 200, description: '設定完成', type: BatchStatusDto })
@@ -34,12 +39,12 @@ export class GroupsController {
     @CurrentUser() user: any,
     @Param('id') batchId: string,
     @Body() configureTakersDto: ConfigureTakersDto,
-  ): Promise<BatchStatusDto> {
+  ): Promise<BatchResponseDto> {
     return await this.groupsService.configureTakers(batchId, user.id, configureTakersDto);
   }
 
   @Get('batches/:id')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '取得批次狀態' })
   @ApiResponse({ status: 200, description: '成功', type: BatchStatusDto })

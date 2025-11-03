@@ -71,17 +71,31 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive!: boolean;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'password_reset_token', select: false })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'password_reset_token',
+    select: false,
+  })
   passwordResetToken?: string;
 
   @Column({ type: 'timestamp', nullable: true, name: 'password_reset_expires' })
   passwordResetExpires?: Date;
 
+  @Column({ type: 'bigint', nullable: true, name: 'session_expires_at' })
+  sessionExpiresAt?: number;
+
+  @Column({ type: 'bigint', nullable: true, name: 'session_created_at' })
+  sessionCreatedAt?: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'taker_id' })
+  takerId?: string;
+
   // Relations
   @OneToMany(() => Exam, (exam) => exam.user)
   exams!: Exam[];
 
-  // Will be imported dynamically to avoid circular dependencies
-  // @OneToMany(() => GroupExamBatch, (batch) => batch.admin)
-  // groupBatches!: GroupExamBatch[];
+  @OneToMany('GroupExamBatch', 'admin')
+  groupBatches!: any[];
 }

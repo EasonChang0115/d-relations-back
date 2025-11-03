@@ -1,18 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as AWS from 'aws-sdk';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class StorageService {
   private readonly logger = new Logger(StorageService.name);
-  private readonly s3Client: AWS.S3;
+  private readonly s3Client: S3Client;
   private readonly pdfCache = new Map<string, { url: string; expiresAt: number }>();
 
   constructor(private readonly configService: ConfigService) {
-    this.s3Client = new AWS.S3({
-      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+    this.s3Client = new S3Client({
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID') || '',
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY') || '',
+      },
       region: this.configService.get('AWS_REGION'),
     });
   }
@@ -34,15 +36,15 @@ export class StorageService {
       const bucketName = this.configService.get('AWS_S3_BUCKET');
       const key = `pdfs/${fileName}`;
 
-      const params: AWS.S3.PutObjectRequest = {
+      const command = new PutObjectCommand({
         Bucket: bucketName,
         Key: key,
         Body: fileBuffer,
         ContentType: 'application/pdf',
         CacheControl: 'max-age=2592000', // 30 days
-      };
+      });
 
-      await this.s3Client.upload(params).promise();
+      await this.s3Client.send(command);
 
       const url = `https://${bucketName}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${key}`;
 
@@ -56,7 +58,8 @@ export class StorageService {
       this.logger.log(`PDF uploaded to S3: ${url}`);
       return url;
     } catch (error) {
-      this.logger.error(`Failed to upload PDF to S3: ${error.message}`);
+      const err = error as Error;
+      this.logger.error(`Failed to upload PDF to S3: ${err.message}`);
       throw error;
     }
   }
@@ -97,7 +100,7 @@ export class StorageService {
       }
     }
 
-    expiredKeys.forEach(key => this.pdfCache.delete(key));
+    expiredKeys.forEach((key) => this.pdfCache.delete(key));
     this.logger.log(`Cleared ${expiredKeys.length} expired cache entries`);
   }
 }

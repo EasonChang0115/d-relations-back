@@ -1,6 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { User } from '@/modules/users/entities/user.entity';
 
 interface DeviceFingerprint {
   userAgent: string;
@@ -9,14 +10,17 @@ interface DeviceFingerprint {
 
 @Injectable()
 export class SessionGuard implements CanActivate {
-  private readonly sessionStorage = new Map<string, { expiresAt: number; deviceFp: DeviceFingerprint }>();
+  private readonly sessionStorage = new Map<
+    string,
+    { expiresAt: number; deviceFp: DeviceFingerprint }
+  >();
 
   constructor(private readonly configService: ConfigService) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
-    const user = request.user;
+    const user = request.user as User;
 
     if (!user) {
       throw new UnauthorizedException('Session not found');
@@ -31,7 +35,7 @@ export class SessionGuard implements CanActivate {
     }
 
     const tenDaysInMs = 10 * 24 * 60 * 60 * 1000;
-    if (now - user.sessionCreatedAt > tenDaysInMs) {
+    if (user.sessionCreatedAt && now - user.sessionCreatedAt > tenDaysInMs) {
       const loginUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:3000')}/auth/login`;
       throw new UnauthorizedException(`Session expired. Please login again: ${loginUrl}`);
     }

@@ -1,12 +1,22 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, LessThan } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Exam } from './entities/exam.entity';
 import { StartExamDto } from './dto/start-exam.dto';
-import { ExamResponseDto, CurrentQuestionResponseDto, ExamQuestionDto } from './dto/exam-response.dto';
+import {
+  ExamResponseDto,
+  CurrentQuestionResponseDto,
+  ExamQuestionDto,
+} from './dto/exam-response.dto';
 import { QuestionsService } from '../questions/questions.service';
-import { ExamStatus, EXAM_CONFIG } from '@/common/constants';
+import { ExamStatus, ExamType, ExamVersion, EXAM_CONFIG } from '@/common/constants';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
 
@@ -239,8 +249,8 @@ export class ExamsService {
       return new ExamResponseDto(existingExam);
     }
 
-    // Get PERSONAL exam config (20 questions)
-    const config = EXAM_CONFIG['PERSONAL'];
+    // Get PAID exam config
+    const config = EXAM_CONFIG['PAID'];
     if (!config) {
       throw new BadRequestException('無效的測驗配置');
     }
@@ -250,7 +260,7 @@ export class ExamsService {
 
     // Get random questions
     const questions = await this.questionsService.findRandomQuestions(
-      examType,
+      examType as ExamType,
       config.questionCount,
       randomSeed,
     );
@@ -259,13 +269,13 @@ export class ExamsService {
 
     // Calculate expiry (30 days for paid exams)
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30);
+    expiresAt.setDate(expiresAt.getDate() + config.validityDays);
 
     const exam = this.examRepository.create({
       userId,
       paymentId,
-      examType,
-      version: 'PERSONAL',
+      examType: examType as ExamType,
+      version: ExamVersion.PAID,
       status: ExamStatus.NOT_STARTED,
       totalQuestions: config.questionCount,
       currentQuestion: 0,
@@ -281,7 +291,10 @@ export class ExamsService {
   /**
    * Validate and start group exam using invitation token
    */
-  async validateGroupExamToken(batchToken: string, invitationToken: string): Promise<{ valid: boolean; batchId?: string }> {
+  async validateGroupExamToken(
+    batchToken: string,
+    invitationToken: string,
+  ): Promise<{ valid: boolean; batchId?: string }> {
     // TODO: Verify tokens with GroupsService
     // - Check batch token exists and is not expired
     // - Check invitation token matches batch
@@ -303,9 +316,12 @@ export class ExamsService {
     try {
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-      const result = await this.examRepository.delete({
-        viewExpiresAt: () => `viewExpiresAt < '${sevenDaysAgo.toISOString()}'`,
-      });
+      const result = await this.examRepository
+        .createQueryBuilder()
+        .delete()
+        .from(Exam)
+        .where('expiresAt < :date', { date: sevenDaysAgo })
+        .execute();
 
       this.logger.log(`Cleaned up ${result.affected || 0} expired exams`);
     } catch (error) {
@@ -332,9 +348,10 @@ export class ExamsService {
     expiresAt.setDate(expiresAt.getDate() + 30);
 
     const exam = this.examRepository.create({
+      userId: takerId,
       sessionId: takerId,
-      examType: 'group',
-      version: 'GROUP',
+      examType: ExamType.PERIPHERAL_BLOOD,
+      version: ExamVersion.GROUP,
       status: ExamStatus.NOT_STARTED,
       totalQuestions: questionSequence.length,
       currentQuestion: 0,
@@ -352,7 +369,10 @@ export class ExamsService {
   /**
    * Resume taker exam after session expiry or device change
    */
-  async resumeTakerExam(examId: string, deviceFingerprint: string): Promise<{ resumeAllowed: boolean; reason?: string }> {
+  async resumeTakerExam(
+    examId: string,
+    deviceFingerprint: string,
+  ): Promise<{ resumeAllowed: boolean; reason?: string }> {
     const exam = await this.findOne(examId);
 
     // Check if exam is expired

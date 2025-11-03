@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, TooManyRequestsException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
@@ -47,8 +47,9 @@ export class OtpService {
     if (attempt?.lockedUntil && Date.now() < attempt.lockedUntil) {
       const remainingSeconds = Math.ceil((attempt.lockedUntil - Date.now()) / 1000);
       this.logger.warn(`OTP verification locked for ${email} for ${remainingSeconds}s`);
-      throw new TooManyRequestsException(
+      throw new HttpException(
         `帳戶已鎖定，請在 ${remainingSeconds} 秒後重試`,
+        HttpStatus.TOO_MANY_REQUESTS,
       );
     }
 
@@ -67,7 +68,9 @@ export class OtpService {
 
       if (currentAttempt.count >= this.maxAttempts) {
         currentAttempt.lockedUntil = Date.now() + this.lockoutDuration;
-        this.logger.warn(`OTP verification locked for ${email} after ${this.maxAttempts} failed attempts`);
+        this.logger.warn(
+          `OTP verification locked for ${email} after ${this.maxAttempts} failed attempts`,
+        );
       }
 
       this.otpAttempts.set(email, currentAttempt);

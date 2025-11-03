@@ -1,7 +1,13 @@
-import { Injectable, BadRequestException, UnauthorizedException, Inject, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OtpVerification } from '../entities/otp-verification.entity';
+import { OtpVerification } from './entities/otp-verification.entity';
 import { User } from '@/modules/users/entities/user.entity';
 import { MailService } from '@/modules/mail/mail.service';
 import * as crypto from 'crypto';
@@ -29,7 +35,10 @@ export class OtpService {
     return otp;
   }
 
-  async sendOtp(email: string, verificationType: string = 'email_verification'): Promise<{ message: string; expiresIn: string }> {
+  async sendOtp(
+    email: string,
+    verificationType: string = 'email_verification',
+  ): Promise<{ message: string; expiresIn: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       return { message: '如果該電子郵件已註冊，將發送驗證碼', expiresIn: '10 分鐘' };
@@ -75,7 +84,10 @@ export class OtpService {
     return { message: '驗證碼已發送至您的電子郵件', expiresIn: `${this.OTP_EXPIRY_MINUTES} 分鐘` };
   }
 
-  async verifyOtp(email: string, otpCode: string): Promise<{ message: string; sessionToken?: string }> {
+  async verifyOtp(
+    email: string,
+    otpCode: string,
+  ): Promise<{ message: string; sessionToken?: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       throw new UnauthorizedException('使用者不存在');
@@ -99,7 +111,7 @@ export class OtpService {
     // Unlock if lockout period has passed
     if (otp.isLocked && otp.lockedUntil && otp.lockedUntil <= new Date()) {
       otp.isLocked = false;
-      otp.lockedUntil = null;
+      otp.lockedUntil = undefined;
       otp.attemptCount = 0;
       await this.otpRepository.save(otp);
     }
@@ -135,10 +147,7 @@ export class OtpService {
 
     // Generate session token (T086)
     const sessionToken = crypto.randomBytes(32).toString('hex');
-    const sessionTokenHash = crypto
-      .createHash('sha256')
-      .update(sessionToken)
-      .digest('hex');
+    const sessionTokenHash = crypto.createHash('sha256').update(sessionToken).digest('hex');
 
     return {
       message: '驗證成功',
@@ -147,9 +156,6 @@ export class OtpService {
   }
 
   async invalidateOtp(userId: string): Promise<void> {
-    await this.otpRepository.update(
-      { userId, isVerified: false },
-      { isVerified: true },
-    );
+    await this.otpRepository.update({ userId, isVerified: false }, { isVerified: true });
   }
 }

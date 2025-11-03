@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bull';
 import { ReportsService } from './reports.service';
 import { ReportsController } from './reports.controller';
 import { PdfGeneratorService } from './services/pdf-generator.service';
@@ -12,6 +13,9 @@ import { QuestionsModule } from '../questions/questions.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ResultReport]),
+    BullModule.registerQueue({
+      name: 'pdf-generation',
+    }),
     ExamsModule,
     AnswersModule,
     QuestionsModule,

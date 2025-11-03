@@ -1,9 +1,20 @@
-import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GroupExamBatch, BatchStatus } from '../entities/group-exam-batch.entity';
 import { GroupTaker, TakerStatus } from '../entities/group-taker.entity';
-import { CreateBatchDto, ConfigureTakersDto, BatchResponseDto, BatchStatusDto, TakerDetailDto } from '../dto/batch.dto';
+import {
+  CreateBatchDto,
+  ConfigureTakersDto,
+  BatchResponseDto,
+  BatchStatusDto,
+  TakerDetailDto,
+} from '../dto/batch.dto';
 import { QuestionsService } from '@/modules/questions/questions.service';
 import { MailService } from '@/modules/mail/mail.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -73,8 +84,8 @@ export class GroupsService {
    */
   async generateBatchQuestions(examType: string, count: number, seed: string): Promise<string[]> {
     // Get random questions using batch seed
-    const questions = await this.questionsService.findRandomQuestions(examType, count, seed);
-    return questions.map(q => q.id);
+    const questions = await this.questionsService.findRandomQuestions(examType as any, count, seed);
+    return questions.map((q) => q.id);
   }
 
   /**
@@ -96,7 +107,11 @@ export class GroupsService {
   /**
    * Configure batch with takers
    */
-  async configureTakers(batchId: string, userId: string, configureTakersDto: ConfigureTakersDto): Promise<BatchResponseDto> {
+  async configureTakers(
+    batchId: string,
+    userId: string,
+    configureTakersDto: ConfigureTakersDto,
+  ): Promise<BatchResponseDto> {
     const batch = await this.findBatchByIdAndAdmin(batchId, userId);
 
     // Validate taker count
@@ -123,12 +138,13 @@ export class GroupsService {
 
     // Update batch status
     batch.status = BatchStatus.CONFIGURED;
-    await this.batchRepository.save(batch);
+    const updatedBatch = await this.batchRepository.save(batch);
 
     // Send invitations
     await this.inviteTakers(batchId, configureTakersDto.takerEmails);
 
-    return this.getBatchStatus(batchId, userId);
+    // Return full batch response
+    return this.toBatchResponseDto(updatedBatch);
   }
 
   /**
@@ -181,7 +197,7 @@ export class GroupsService {
       takerCount: batch.takerCount,
       completedCount: batch.completedCount,
       groupAccuracyRate: batch.groupAccuracyRate,
-      takers: takers.map(t => this.toTakerDetailDto(t)),
+      takers: takers.map((t) => this.toTakerDetailDto(t)),
     };
   }
 
