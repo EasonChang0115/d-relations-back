@@ -4,9 +4,17 @@ description: Generate an actionable, dependency-ordered tasks.md for the feature
 
 ## 🌐 語言要求 (Language Requirement)
 
-**重要**：根據專案憲章第 V 條，所有生成的任務文件（tasks.md）必須使用繁體中文（zh-TW）撰寫。
+**重要**：根據專案憲章第 V 條，開發團隊內部文件與用戶介面使用不同語言：
 
-**CRITICAL**: Per Constitution Principle V, all generated task documents (tasks.md) MUST be written in Traditional Chinese (zh-TW).
+- **任務文件 (tasks.md)**: 必須使用繁體中文（zh-TW）撰寫，供台灣開發團隊執行
+- **任務描述**: 需區分開發任務（中文）與用戶介面實作任務（需實作日文內容）
+- **本地化任務**: 明確標示需要日文本地化的用戶介面元素
+
+**CRITICAL**: Per Constitution Principle V, internal development documents and user interfaces use different languages:
+
+- **Task documents (tasks.md)**: MUST be written in Traditional Chinese (zh-TW) for Taiwanese development team
+- **Task descriptions**: Must distinguish between development tasks (Chinese) and UI implementation tasks (requiring Japanese content)
+- **Localization tasks**: Clearly mark user interface elements requiring Japanese localization
 
 ## User Input
 

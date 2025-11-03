@@ -4,9 +4,17 @@ description: Execute the implementation planning workflow using the plan templat
 
 ## 🌐 語言要求 (Language Requirement)
 
-**重要**：根據專案憲章第 V 條，所有生成的實作計畫文件（plan.md、research.md、data-model.md、quickstart.md）必須使用繁體中文（zh-TW）撰寫。
+**重要**：根據專案憲章第 V 條，開發團隊內部文件與用戶介面使用不同語言：
 
-**CRITICAL**: Per Constitution Principle V, all generated implementation planning documents (plan.md, research.md, data-model.md, quickstart.md) MUST be written in Traditional Chinese (zh-TW).
+- **計畫文件 (plan.md, research.md, data-model.md, quickstart.md)**: 必須使用繁體中文（zh-TW）撰寫
+- **用戶介面規劃**: 需註明所有面向日本最終用戶的介面將使用日文
+- **醫學術語**: 在文件中需標註中日對照以避免翻譯錯誤
+
+**CRITICAL**: Per Constitution Principle V, internal development documents and user interfaces use different languages:
+
+- **Planning documents (plan.md, research.md, data-model.md, quickstart.md)**: MUST be written in Traditional Chinese (zh-TW)
+- **User interface planning**: Must note that all end-user facing interfaces will be in Japanese
+- **Medical terminology**: Include Chinese-Japanese cross-reference to prevent translation errors
 
 ## User Input
 

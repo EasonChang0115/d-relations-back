@@ -4,9 +4,17 @@ description: Create or update the feature specification from a natural language 
 
 ## 🌐 語言要求 (Language Requirement)
 
-**重要**：根據專案憲章第 V 條，所有生成的規格文件（spec.md）必須使用繁體中文（zh-TW）撰寫。
+**重要**：根據專案憲章第 V 條，開發團隊內部文件與用戶介面使用不同語言：
 
-**CRITICAL**: Per Constitution Principle V, all generated specification documents (spec.md) MUST be written in Traditional Chinese (zh-TW).
+- **規格文件 (spec.md)**: 必須使用繁體中文（zh-TW）撰寫，供台灣開發團隊使用
+- **專有名詞**: 醫學術語需同時標註繁體中文與日文原文（例：細胞分類 / 細胞分類）
+- **用戶介面內容**: 所有面向日本最終用戶的介面文字將使用日文（在實作階段處理）
+
+**CRITICAL**: Per Constitution Principle V, internal development documents and user interfaces use different languages:
+
+- **Specification documents (spec.md)**: MUST be written in Traditional Chinese (zh-TW) for Taiwanese development team
+- **Technical terminology**: Medical terms must include both Traditional Chinese and Japanese notation
+- **User interface content**: All end-user facing content will be in Japanese (handled during implementation phase)
 
 ## User Input
 
