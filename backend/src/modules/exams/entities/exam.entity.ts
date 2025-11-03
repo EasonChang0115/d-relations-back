@@ -50,6 +50,9 @@ export class Exam extends BaseEntity {
   @Column({ type: 'varchar', length: 64, nullable: true, name: 'random_seed' })
   randomSeed?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'payment_id' })
+  paymentId?: string;
+
   @Column({ type: 'timestamp', nullable: true, name: 'started_at' })
   startedAt?: Date;
 

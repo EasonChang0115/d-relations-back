@@ -5,9 +5,10 @@ import { PaymentsController } from './payments.controller';
 import { PaymentRecord } from './entities/payment-record.entity';
 import { User } from '@/modules/users/entities/user.entity';
 import { MailModule } from '@/modules/mail/mail.module';
+import { ExamsModule } from '@/modules/exams/exams.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PaymentRecord, User]), MailModule],
+  imports: [TypeOrmModule.forFeature([PaymentRecord, User]), MailModule, ExamsModule],
   providers: [PaymentsService],
   controllers: [PaymentsController],
   exports: [PaymentsService],

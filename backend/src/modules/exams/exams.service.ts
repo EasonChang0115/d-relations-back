@@ -196,6 +196,85 @@ export class ExamsService {
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
+  /**
+   * Verify if user has access to paid exam via payment
+   * Used for paid version exams (20 questions)
+   */
+  async verifyPaidExamAccess(userId: string, paymentId: string): Promise<boolean> {
+    // Check if exam exists for this payment
+    const exam = await this.examRepository.findOne({
+      where: { userId, paymentId },
+    });
+
+    if (!exam) {
+      // Create paid exam for user if not exists
+      return true;
+    }
+
+    // Check if exam hasn't expired
+    if (exam.expiresAt && new Date() > exam.expiresAt) {
+      throw new ForbiddenException('測驗已過期');
+    }
+
+    return true;
+  }
+
+  /**
+   * Create paid exam after successful payment
+   */
+  async createPaidExamFromPayment(
+    userId: string,
+    paymentId: string,
+    examType: string,
+  ): Promise<ExamResponseDto> {
+    // Check if paid exam already exists for this payment
+    const existingExam = await this.examRepository.findOne({
+      where: { userId, paymentId },
+    });
+
+    if (existingExam && existingExam.status !== ExamStatus.EXPIRED) {
+      return new ExamResponseDto(existingExam);
+    }
+
+    // Get PERSONAL exam config (20 questions)
+    const config = EXAM_CONFIG['PERSONAL'];
+    if (!config) {
+      throw new BadRequestException('無效的測驗配置');
+    }
+
+    // Generate random seed deterministically
+    const randomSeed = this.generateRandomSeed(userId, examType);
+
+    // Get random questions
+    const questions = await this.questionsService.findRandomQuestions(
+      examType,
+      config.questionCount,
+      randomSeed,
+    );
+
+    const questionSequence = questions.map((q) => q.id);
+
+    // Calculate expiry (30 days for paid exams)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    const exam = this.examRepository.create({
+      userId,
+      paymentId,
+      examType,
+      version: 'PERSONAL',
+      status: ExamStatus.NOT_STARTED,
+      totalQuestions: config.questionCount,
+      currentQuestion: 0,
+      questionSequence,
+      randomSeed,
+      expiresAt,
+    });
+
+    const savedExam = await this.examRepository.save(exam);
+    return new ExamResponseDto(savedExam);
+  }
+
   async remove(id: string): Promise<void> {
     const exam = await this.findOne(id);
     await this.examRepository.softRemove(exam);

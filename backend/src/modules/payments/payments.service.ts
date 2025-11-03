@@ -6,6 +6,7 @@ import { PaymentRecord, PaymentStatus } from '../entities/payment-record.entity'
 import { User } from '@/modules/users/entities/user.entity';
 import { CreateCheckoutDto, PaymentWebhookDto } from '../dto/create-checkout.dto';
 import { MailService } from '@/modules/mail/mail.service';
+import { ExamsService } from '@/modules/exams/exams.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class PaymentsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @Optional() private readonly mailService?: MailService,
+    @Optional() private readonly examsService?: ExamsService,
     private readonly configService: ConfigService,
   ) {
     this.stripeSecretKey = configService.get<string>('stripe.secretKey') || '';
@@ -105,7 +107,21 @@ export class PaymentsService {
       payment.stripeResponse = JSON.stringify(data);
       await this.paymentRepository.save(payment);
 
-      // Send exam link email after successful payment (T082)
+      // Create paid exam after successful payment
+      if (this.examsService && payment.user) {
+        try {
+          await this.examsService.createPaidExamFromPayment(
+            payment.userId,
+            payment.id,
+            payment.examType || 'general',
+          );
+        } catch (error) {
+          console.error('Failed to create paid exam:', error);
+          // Don't throw - payment is still completed
+        }
+      }
+
+      // Send exam link email after successful payment
       if (this.mailService && payment.user) {
         try {
           const examUrl = `${this.frontendUrl}/exams/start?type=${payment.examType}`;

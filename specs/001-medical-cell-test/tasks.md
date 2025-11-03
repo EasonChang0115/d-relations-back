@@ -298,11 +298,11 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 - [x] T101 [US3] 建立 PaymentsModule (backend/src/modules/payments/payments.module.ts)
 - [x] T102 [US3] 建立 OtpModule (backend/src/modules/otp/otp.module.ts)
 - [x] T103 [US3] 建立 MailModule (backend/src/modules/mail/mail.module.ts)
-- [ ] T104 [US3] 建立 StorageModule (backend/src/modules/storage/storage.module.ts)，整合 AWS S3
+- [x] T104 [US3] 建立 StorageModule (backend/src/modules/storage/storage.module.ts)，整合 AWS S3
 
 ### 會話管理
 
-- [ ] T105 [US3] 實作裝置指紋追蹤 (AuthService - generateDeviceFingerprint 方法)，使用 User-Agent + IP
+- [x] T105 [US3] 實作裝置指紋追蹤 (AuthService - generateDeviceFingerprint 方法)，使用 User-Agent + IP
 - [ ] T106 [US3] 實作會話驗證中間件 (SessionGuard - backend/src/common/guards/session.guard.ts)，檢查 10 天有效期限
 - [ ] T107 [US3] 實作會話自動延期邏輯 (AuthService - renewSession 方法)
 
