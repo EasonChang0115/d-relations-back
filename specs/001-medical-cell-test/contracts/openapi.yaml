@@ -86,11 +86,272 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '#/components/schemas/UserResponse'
+                        access_token:
+                          type: string
+                          description: JWT Access Token
+                        refresh_token:
+                          type: string
+                          description: JWT Refresh Token
         '400':
           $ref: '#/components/responses/BadRequest'
         '409':
           description: Email 已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [ Auth ]
+      summary: 使用者登入
+      description: 使用 Email 和密碼登入系統
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: 登入成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '#/components/schemas/UserResponse'
+                        access_token:
+                          type: string
+                          description: JWT Access Token
+                        refresh_token:
+                          type: string
+                          description: JWT Refresh Token
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Email 或密碼錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [ Auth ]
+      summary: 使用者登出
+      description: 登出當前使用者並使 Token 失效
+      operationId: logout
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [ Auth ]
+      summary: 刷新 Access Token
+      description: 使用 Refresh Token 取得新的 Access Token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ refresh_token ]
+              properties:
+                refresh_token:
+                  type: string
+                  description: Refresh Token
+      responses:
+        '200':
+          description: Token 刷新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        access_token:
+                          type: string
+                          description: 新的 JWT Access Token
+                        refresh_token:
+                          type: string
+                          description: 新的 JWT Refresh Token
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Refresh Token 無效或已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/me:
+    get:
+      tags: [ Auth ]
+      summary: 取得當前使用者資訊
+      description: 取得當前已登入使用者的基本資訊
+      operationId: getCurrentUser
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: 成功取得使用者資訊
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/forgot-password:
+    post:
+      tags: [ Auth ]
+      summary: 忘記密碼
+      description: 發送密碼重設連結至使用者 Email
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ email ]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: wang@example.com
+      responses:
+        '200':
+          description: 密碼重設郵件已發送
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Email 不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/reset-password:
+    post:
+      tags: [ Auth ]
+      summary: 重設密碼
+      description: 使用重設 Token 設定新密碼
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ token, new_password ]
+              properties:
+                token:
+                  type: string
+                  description: 密碼重設 Token（從郵件連結中取得）
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                new_password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  maxLength: 100
+                  description: 新密碼（最少 8 個字元）
+                  example: NewSecurePass123!
+      responses:
+        '200':
+          description: 密碼重設成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Token 無效或已過期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/change-password:
+    post:
+      tags: [ Auth ]
+      summary: 變更密碼
+      description: 已登入使用者變更密碼
+      operationId: changePassword
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ old_password, new_password ]
+              properties:
+                old_password:
+                  type: string
+                  format: password
+                  description: 舊密碼
+                  example: OldSecurePass123!
+                new_password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  maxLength: 100
+                  description: 新密碼（最少 8 個字元）
+                  example: NewSecurePass123!
+      responses:
+        '200':
+          description: 密碼變更成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: 舊密碼錯誤或未授權
           content:
             application/json:
               schema:
@@ -898,7 +1159,7 @@ components:
     # ========== Auth / Users ==========
     RegisterDto:
       type: object
-      required: [ name, email ]
+      required: [ name, email, password ]
       properties:
         name:
           type: string
@@ -909,6 +1170,13 @@ components:
           type: string
           format: email
           example: wang@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 100
+          description: 使用者密碼（最少 8 個字元）
+          example: SecurePass123!
         organization_code:
           type: string
           maxLength: 50
@@ -924,6 +1192,21 @@ components:
         additional_info:
           type: string
           example: 額外資訊
+
+    LoginDto:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          format: email
+          example: wang@example.com
+          description: 使用者 Email
+        password:
+          type: string
+          format: password
+          example: SecurePass123!
+          description: 使用者密碼
 
     UpdateUserDto:
       type: object

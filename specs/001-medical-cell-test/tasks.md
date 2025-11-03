@@ -61,7 +61,13 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 - [x] T012 [P] 實作 JWT 策略 (backend/src/modules/auth/strategies/jwt.strategy.ts)，整合 Passport
 - [x] T013 [P] 實作 JWT 認證守衛 (backend/src/common/guards/jwt-auth.guard.ts)
 - [x] T014 [P] 實作角色守衛 (backend/src/common/guards/roles.guard.ts)，支援 4 種使用者角色
-- [x] T015 [P] 建立自訂裝飾器 (backend/src/common/decorators/current-user.decorator.ts, roles.decorator.ts)
+- [x] T015 [P] 建立自訂裝飾器 (backend/src/common/decorators/current-user.decorator.ts, roles.decorator.ts, public.decorator.ts)
+- [ ] T015a [P] 建立 Auth DTO (backend/src/modules/auth/dto/register.dto.ts, login.dto.ts)，包含密碼驗證規則
+- [ ] T015b [P] 實作 AuthService (backend/src/modules/auth/auth.service.ts)，處理註冊、登入、登出、Token 刷新邏輯
+- [ ] T015c [P] 實作密碼加密服務 (backend/src/modules/auth/services/password.service.ts)，使用 bcrypt
+- [ ] T015d [P] 實作 Local 策略 (backend/src/modules/auth/strategies/local.strategy.ts)，用於密碼登入驗證
+- [ ] T015e 實作 AuthController (backend/src/modules/auth/auth.controller.ts)，端點: POST /api/auth/register, POST /api/auth/login, POST /api/auth/logout, POST /api/auth/refresh, GET /api/auth/me, POST /api/auth/forgot-password, POST /api/auth/reset-password, POST /api/auth/change-password
+- [ ] T015f 建立 AuthModule (backend/src/modules/auth/auth.module.ts)，整合所有認證相關服務
 
 ### API 架構與中間件
 
@@ -83,6 +89,14 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 - [x] T025 建立 App Module (backend/src/app.module.ts)，整合所有功能模組與設定
 - [x] T026 建立 App Controller (backend/src/app.controller.ts)，實作健康檢查端點 GET /health
 - [x] T027 建立主進入點 (backend/src/main.ts)，設定 Swagger、CORS、全域管道、全域過濾器
+
+### 密碼管理功能
+
+- [ ] T027a [P] 建立 PasswordResetToken 實體 (backend/src/modules/auth/entities/password-reset-token.entity.ts)，記錄重設 Token 與過期時間
+- [ ] T027b [P] 實作忘記密碼邏輯 (AuthService - forgotPassword 方法)，生成重設 Token 並發送郵件
+- [ ] T027c [P] 實作重設密碼邏輯 (AuthService - resetPassword 方法)，驗證 Token 並更新密碼
+- [ ] T027d [P] 實作變更密碼邏輯 (AuthService - changePassword 方法)，驗證舊密碼並更新新密碼
+- [ ] T027e [P] 建立密碼重設郵件範本 (backend/src/modules/mail/templates/password-reset.hbs)
 
 **Checkpoint**: 基礎建設完成 - 可開始平行開發使用者故事
 
@@ -148,34 +162,43 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ---
 
-## Phase 4: User Story 2 - 使用者資訊登錄 (優先級: P1)
+## Phase 4: User Story 2 - 使用者資訊登錄與身份驗證 (優先級: P1)
 
-**目標**: 使用者在進行測驗前可選擇登錄個人資訊 (姓名、email、組織代碼、職種、證照狀態)，為後續付費版與團體測驗奠定基礎。
+**目標**: 使用者可以註冊帳號並登入系統，在進行測驗前登錄個人資訊 (姓名、email、組織代碼、職種、證照狀態)，系統可識別並自動填入先前登錄的資訊。
 
-**獨立測試**: 進入登錄頁面 → 填寫個人資訊 → 提交表單 → 驗證資訊已儲存 → 再次進入自動填入
+**獨立測試**: 註冊帳號 → 登入系統 → 填寫個人資訊 → 提交表單 → 登出 → 再次登入 → 驗證資訊已儲存並自動填入
 
-**註**: 此故事主要擴充 User 實體欄位與驗證邏輯，大部分基礎已在 US1 建立
+**註**: 此故事整合了使用者註冊、登入、個人資訊管理等完整的身份驗證流程
+
+### 資料實體增強
+
+- [ ] T057 [P] [US2] 擴充 User 實體 (backend/src/modules/users/entities/user.entity.ts)，新增 password (加密)、password_reset_token、password_reset_expires 欄位
 
 ### 資料驗證增強
 
-- [x] T057 [P] [US2] 擴充 CreateUserDto (backend/src/modules/users/dto/create-user.dto.ts)，新增 organization_code、job_title、certification_status 欄位驗證
-- [x] T058 [P] [US2] 建立 Email 格式驗證器 (backend/src/common/validators/email.validator.ts)，遵循 RFC 5322
+- [x] T058 [P] [US2] 擴充 CreateUserDto (backend/src/modules/users/dto/create-user.dto.ts)，新增 password、organization_code、job_title、certification_status 欄位驗證
+- [x] T059 [P] [US2] 建立 Email 格式驗證器 (backend/src/common/validators/email.validator.ts)，遵循 RFC 5322
 
 ### 服務層邏輯增強
 
-- [x] T059 [US2] 擴充 UsersService (backend/src/modules/users/users.service.ts)，新增 findByEmail、updateUserInfo 方法
-- [x] T060 [US2] 實作使用者資訊自動填入邏輯 (UsersService - getUserProfile 方法)
+- [x] T060 [US2] 擴充 UsersService (backend/src/modules/users/users.service.ts)，新增 findByEmail、updateUserInfo、updatePassword 方法
+- [x] T061 [US2] 實作使用者資訊自動填入邏輯 (UsersService - getUserProfile 方法)
 
-### API 端點增強
+### 認證流程整合
 
-- [x] T061 [US2] 擴充 UsersController (backend/src/modules/users/users.controller.ts)，新增 POST /api/users/register 端點 (無需密碼)
+- [ ] T062 [US2] 整合註冊流程 (AuthService - register 方法)，呼叫 UsersService 建立使用者並加密密碼
+- [ ] T063 [US2] 整合登入流程 (AuthService - login 方法)，驗證密碼並返回 JWT Token
+- [ ] T064 [US2] 實作 Token 刷新邏輯 (AuthService - refreshToken 方法)，驗證 Refresh Token 並生成新的 Access Token
+- [ ] T065 [US2] 實作登出邏輯 (AuthService - logout 方法)，將 Token 加入黑名單 (Redis)
 
 ### 錯誤處理
 
-- [x] T062 [US2] 實作 Email 重複檢查邏輯 (UsersService)，返回 HTTP 409 如 email 已存在
-- [x] T063 [US2] 實作欄位格式錯誤處理 (ValidationPipe)，返回 HTTP 400 與詳細錯誤訊息
+- [x] T066 [US2] 實作 Email 重複檢查邏輯 (UsersService)，返回 HTTP 409 如 email 已存在
+- [x] T067 [US2] 實作欄位格式錯誤處理 (ValidationPipe)，返回 HTTP 400 與詳細錯誤訊息
+- [ ] T068 [US2] 實作登入失敗處理 (AuthService)，返回 HTTP 401 如密碼錯誤
+- [ ] T069 [US2] 實作 Token 無效處理 (JwtAuthGuard)，返回 HTTP 401 如 Token 過期或無效
 
-**Checkpoint**: 使用者故事 1 與 2 皆可獨立運作
+**Checkpoint**: 使用者故事 1 與 2 皆可獨立運作，完整的註冊登入流程已實作
 
 ---
 
@@ -580,30 +603,57 @@ Task T054: "建立細胞圖片種子資料 in backend/src/database/seeds/cell-im
 
 ## Summary (摘要)
 
-- **總任務數**: 173 個任務
+- **總任務數**: 187 個任務 (新增 14 個登入註冊相關任務)
 - **使用者故事數**: 6 個 (US1, US2, US3, US4, US5, US6)
 - **優先級分布**: P1 = 3 個故事 (US1, US2, US6), P2 = 3 個故事 (US3, US4, US5)
-- **平行任務數**: 約 60 個任務標記為 [P]，可同時執行
-- **建議 MVP 範圍**: Phase 1 + Phase 2 + Phase 3 (US1) + Phase 4 (US2) + Phase 5 (US6) = 約 74 個任務
+- **平行任務數**: 約 70 個任務標記為 [P]，可同時執行
+- **建議 MVP 範圍**: Phase 1 + Phase 2 + Phase 3 (US1) + Phase 4 (US2) + Phase 5 (US6) = 約 88 個任務
 - **預估工時**: MVP 約 3-4 週 (1 位開發者)，完整專案約 6-8 週
 
 ### 任務統計 (Tasks per User Story)
 
 - **Setup**: 8 個任務
-- **Foundational**: 19 個任務
+- **Foundational**: 30 個任務 (+11 個認證與密碼管理任務)
 - **US1 (免費版測驗)**: 29 個任務
-- **US2 (使用者資訊)**: 7 個任務
+- **US2 (使用者資訊與身份驗證)**: 13 個任務 (+6 個認證整合任務)
 - **US6 (隨機出題)**: 11 個任務
 - **US3 (付費版個人)**: 37 個任務
 - **US4 (團體管理)**: 20 個任務
 - **US5 (團體受測者)**: 17 個任務
 - **Polish**: 25 個任務
 
+### 新增任務明細 (登入註冊功能)
+
+**Phase 2 - Foundational 新增**:
+
+- T015a: Auth DTO (register.dto.ts, login.dto.ts)
+- T015b: AuthService 核心邏輯
+- T015c: 密碼加密服務 (bcrypt)
+- T015d: Local 策略 (密碼驗證)
+- T015e: AuthController (8 個端點: 註冊、登入、登出、刷新、取得當前使用者、忘記密碼、重設密碼、變更密碼)
+- T015f: AuthModule 模組整合
+- T027a: PasswordResetToken 實體
+- T027b: 忘記密碼邏輯
+- T027c: 重設密碼邏輯
+- T027d: 變更密碼邏輯
+- T027e: 密碼重設郵件範本
+
+**Phase 4 - US2 擴充**:
+
+- T057: User 實體新增密碼相關欄位
+- T062: 整合註冊流程
+- T063: 整合登入流程
+- T064: Token 刷新邏輯
+- T065: 登出邏輯
+- T068: 登入失敗處理
+- T069: Token 無效處理
+
 ### 平行執行機會
 
 - **Setup 階段**: 5 個任務可平行 (T003-T007)
-- **Foundational 階段**: 12 個任務可平行 (認證、API 架構、外部服務配置)
+- **Foundational 階段**: 18 個任務可平行 (+6 個認證相關任務: T015a-T015d, T027a, T027e)
 - **US1 階段**: 15 個任務可平行 (所有實體、所有 DTO、種子資料)
+- **US2 階段**: 3 個任務可平行 (T057, T058, T059)
 - **US3 階段**: 10 個任務可平行 (實體、DTO、郵件範本、PDF 範本)
 - **US4 階段**: 3 個任務可平行 (DTO、郵件範本)
 - **US5 階段**: 1 個任務可平行 (郵件範本)
@@ -614,7 +664,7 @@ Task T054: "建立細胞圖片種子資料 in backend/src/database/seeds/cell-im
 每個使用者故事皆可獨立測試:
 
 - **US1**: 完整免費版測驗流程 (15 題)
-- **US2**: 使用者資訊登錄與自動填入
+- **US2**: 使用者註冊、登入、資訊登錄、自動填入、密碼管理
 - **US6**: 隨機出題機制與答題限制
 - **US3**: 付費版購買、OTP 驗證、進階報表、PDF 下載
 - **US4**: 團體測驗購買、管理者設定、追蹤受測狀態

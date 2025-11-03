@@ -112,6 +112,15 @@ export class User {
   @Column({ type: "text", nullable: true })
   additional_info: string;
 
+  @Column({ length: 255, nullable: true, select: false })
+  password: string; // bcrypt 加密後的密碼
+
+  @Column({ type: "varchar", length: 64, nullable: true })
+  password_reset_token: string; // SHA-256 雜湊的重設 Token
+
+  @Column({ type: "timestamp", nullable: true })
+  password_reset_expires: Date; // 重設 Token 過期時間
+
   @Column({ default: true })
   is_active: boolean;
 
@@ -145,6 +154,9 @@ export class User {
 | id | VARCHAR(36) | PK | UUID 主鍵 |
 | name | VARCHAR(100) | NOT NULL | 使用者姓名 |
 | email | VARCHAR(255) | UNIQUE, NOT NULL | 電子郵件 |
+| password | VARCHAR(255) | NULL | bcrypt 加密密碼 (select: false) |
+| password_reset_token | VARCHAR(64) | NULL | SHA-256 雜湊的重設 Token |
+| password_reset_expires | TIMESTAMP | NULL | 重設 Token 過期時間 |
 | role | ENUM | NOT NULL | 使用者角色 |
 | organization_code | VARCHAR(50) | NULL | 組織代碼 |
 | job_title | VARCHAR(100) | NULL | 職種 |
@@ -160,12 +172,22 @@ export class User {
 - UNIQUE INDEX `idx_email` (`email`)
 - INDEX `idx_role` (`role`)
 - INDEX `idx_created_at` (`created_at`)
+- INDEX `idx_password_reset_token` (`password_reset_token`)
 
 **驗證規則**:
 
 - `email`: 必須符合 RFC 5322 格式
 - `name`: 長度 2-100 字元
+- `password`: 長度 8-100 字元（加密前），bcrypt 雜湊後儲存
+- `password_reset_token`: SHA-256 雜湊的 64 字元字串
+- `password_reset_expires`: 預設 1 小時有效期限
 - `organization_code`: 長度 1-50 字元（如提供）
+
+**安全性設計**:
+
+- `password` 欄位使用 `select: false`，預設查詢不回傳
+- 密碼使用 bcrypt 加密，cost factor 設定為 10
+- 密碼重設 Token 使用 SHA-256 雜湊後儲存，原始 Token 僅透過郵件發送一次
 
 ---
 
@@ -1111,6 +1133,87 @@ export class Session {
 
 ---
 
+### 11. PasswordResetToken (密碼重設 Token)
+
+**用途**: 儲存密碼重設 Token 資訊，用於忘記密碼流程。
+
+**TypeORM Entity**:
+
+```typescript
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
+import { User } from "./user.entity";
+
+@Entity("password_reset_tokens")
+export class PasswordResetToken {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column({ type: "varchar", length: 64, unique: true })
+  token: string; // SHA-256 雜湊的 Token
+
+  @Column({ type: "varchar", length: 255 })
+  email: string; // 請求重設的 Email
+
+  @Column({ default: false })
+  is_used: boolean; // 是否已使用
+
+  @Column({ type: "timestamp" })
+  expires_at: Date; // 過期時間（預設 1 小時）
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  // 關聯
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: "user_id" })
+  user: User;
+
+  @Column({ type: "varchar", length: 36, nullable: true })
+  user_id: string;
+}
+```
+
+**資料庫表格** (`password_reset_tokens`):
+| 欄位 | 型別 | 約束 | 說明 |
+|------|------|------|------|
+| id | VARCHAR(36) | PK | UUID 主鍵 |
+| user_id | VARCHAR(36) | FK, NULL | 使用者 ID |
+| email | VARCHAR(255) | NOT NULL | 請求重設的 Email |
+| token | VARCHAR(64) | UNIQUE, NOT NULL | SHA-256 雜湊的 Token |
+| is_used | BOOLEAN | DEFAULT FALSE | 是否已使用 |
+| expires_at | TIMESTAMP | NOT NULL | 過期時間（1 小時） |
+| created_at | TIMESTAMP | NOT NULL | 建立時間 |
+
+**索引**:
+
+- PRIMARY KEY (`id`)
+- FOREIGN KEY (`user_id`) REFERENCES `users(id)`
+- UNIQUE INDEX `idx_token` (`token`)
+- INDEX `idx_email` (`email`)
+- INDEX `idx_expires_at` (`expires_at`)
+
+**驗證規則**:
+
+- `token`: SHA-256 雜湊後的 64 字元字串
+- `expires_at`: 預設 1 小時有效期限
+- Token 僅能使用一次（`is_used` 標記）
+
+**安全性設計**:
+
+- 原始 Token（UUID）僅透過郵件發送一次，不儲存於資料庫
+- 資料庫僅儲存 SHA-256 雜湊後的 Token
+- Token 過期後自動失效，無法重複使用
+- 每次重設密碼請求產生新的 Token，舊 Token 自動失效
+
+---
+
 ## 資料庫設計原則
 
 ### 命名規範
@@ -1176,11 +1279,13 @@ npm run migration:revert
 2. **管理者帳號**:
 
    - 系統管理員（用於測試與維護）
+   - 預設密碼: 使用 bcrypt 加密
 
 3. **測試資料**:
-   - 測試使用者
+   - 測試使用者（含加密密碼）
    - 測試測驗實例
    - 測試答案記錄
+   - 測試 Session 記錄
 
 ---
 

@@ -155,13 +155,15 @@ backend/
 │   │   └── app.config.ts            # 應用程式配置
 │   │
 │   ├── modules/
-│   │   ├── auth/                    # 身份驗證模組 (US-001, FR-008-016)
+│   │   ├── auth/                    # 身份驗證模組 (US-002, FR-001-010)
 │   │   │   ├── auth.module.ts
-│   │   │   ├── auth.controller.ts   # POST /api/auth/register, /login
-│   │   │   ├── auth.service.ts      # 密碼雜湊、JWT 簽發
-│   │   │   ├── strategies/          # Passport 策略 (jwt.strategy.ts, google.strategy.ts)
-│   │   │   ├── dto/                 # LoginDto, RegisterDto
-│   │   │   └── guards/              # JwtAuthGuard, RolesGuard
+│   │   │   ├── auth.controller.ts   # POST /api/auth/register, /login, /logout, /refresh, GET /api/auth/me, POST /api/auth/forgot-password, /reset-password, /change-password
+│   │   │   ├── auth.service.ts      # 密碼雜湊 (bcrypt)、JWT 簽發、Token 刷新、密碼重設
+│   │   │   ├── strategies/          # Passport 策略 (jwt.strategy.ts, local.strategy.ts)
+│   │   │   ├── dto/                 # LoginDto, RegisterDto, ResetPasswordDto, ChangePasswordDto
+│   │   │   ├── guards/              # JwtAuthGuard, RolesGuard, LocalAuthGuard
+│   │   │   ├── entities/            # password-reset-token.entity.ts
+│   │   │   └── services/            # password.service.ts (bcrypt 加密)
 │   │   │
 │   │   ├── users/                   # 使用者管理模組 (US-002, FR-017-022)
 │   │   │   ├── users.module.ts
@@ -225,8 +227,8 @@ backend/
 │   │   │
 │   │   ├── mail/                    # 郵件服務模組 (FR-075-080)
 │   │   │   ├── mail.module.ts
-│   │   │   ├── mail.service.ts      # 發送 OTP, 邀請信, 提醒信
-│   │   │   └── templates/           # 郵件範本 (Handlebars)
+│   │   │   ├── mail.service.ts      # 發送 OTP, 邀請信, 提醒信, 密碼重設信
+│   │   │   └── templates/           # 郵件範本 (Handlebars): otp-verification.hbs, exam-link.hbs, password-reset.hbs, taker-invitation.hbs
 │   │   │
 │   │   └── storage/                 # 檔案儲存模組 (AWS S3)
 │   │       ├── storage.module.ts
@@ -311,9 +313,9 @@ backend/
 - [`contracts/openapi.yaml`](./contracts/openapi.yaml) - OpenAPI 3.0 規格
 - [`quickstart.md`](./quickstart.md) - 本地開發環境設定指南
 
-**資料模型設計** (10 個核心實體):
+**資料模型設計** (11 個核心實體):
 
-1. ✅ User - 使用者（支援 4 種角色）
+1. ✅ User - 使用者（支援 4 種角色，含密碼欄位）
 2. ✅ Exam - 測驗實例（含題目序列、狀態管理）
 3. ✅ Question - 題目（末梢血版 + 骨髓版）
 4. ✅ CellImage - 細胞圖片（每題 10 張）
@@ -323,10 +325,19 @@ backend/
 8. ✅ OTPVerification - OTP 驗證記錄（含嘗試次數、鎖定狀態）
 9. ✅ PaymentRecord - 付款記錄（Stripe 整合）
 10. ✅ Session - 會話管理（裝置指紋、過期時間）
+11. ✅ PasswordResetToken - 密碼重設 Token（含過期時間）
 
-**API 端點設計** (40+ 端點):
+**API 端點設計** (45+ 端點):
 
-- ✅ Auth: 註冊、登入（未實作 - 使用 OTP 取代）
+- ✅ Auth: 完整身份驗證流程
+  - POST /auth/register - 使用者註冊（含密碼）
+  - POST /auth/login - 使用者登入
+  - POST /auth/logout - 使用者登出
+  - POST /auth/refresh - 刷新 Access Token
+  - GET /auth/me - 取得當前使用者資訊
+  - POST /auth/forgot-password - 忘記密碼（發送重設連結）
+  - POST /auth/reset-password - 重設密碼（使用 Token）
+  - POST /auth/change-password - 變更密碼（已登入使用者）
 - ✅ Users: 個人資料管理（GET/PUT /users/profile）
 - ✅ OTP: 發送驗證碼、驗證（POST /otp/send, /otp/verify）
 - ✅ Exams: 開始測驗、取得題目、查詢進度（POST /exams/start, GET /exams/{id}/current）
