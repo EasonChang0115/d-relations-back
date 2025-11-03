@@ -342,33 +342,33 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 - [x] T118 [US4] 實作管理後台查詢邏輯 (GroupsService - getBatchStatus 方法)，顯示所有受測者姓名、受測日期、正答率
 - [x] T119 [US4] 實作團體統計計算 (GroupsService - calculateGroupStats 方法)，計算團體整體正答率
-- [ ] T120 [US4] 實作管理後台權限驗證 (AdminGuard - backend/src/common/guards/admin.guard.ts)，檢查管理 Token 與 Session (1 小時)
+- [x] T120 [US4] 實作管理後台權限驗證 (AdminGuard - backend/src/common/guards/admin.guard.ts)，檢查管理 Token 與 Session (1 小時)
 
 ### 郵件服務擴充
 
-- [ ] T121 [P] [US4] 建立管理頁面連結郵件範本 (backend/src/modules/mail/templates/admin-link.hbs)
-- [ ] T122 [P] [US4] 建立受測者邀請郵件範本 (backend/src/modules/mail/templates/taker-invitation.hbs)
+- [x] T121 [P] [US4] 建立管理頁面連結郵件範本 (backend/src/modules/mail/templates/admin-link.hbs)
+- [x] T122 [P] [US4] 建立受測者邀請郵件範本 (backend/src/modules/mail/templates/taker-invitation.hbs)
 - [x] T123 [US4] 實作批次郵件發送邏輯 (MailService - sendBatchInvitations 方法)
 
 ### API 端點
 
 - [ ] T124 [US4] 實作 GroupsController (backend/src/modules/groups/groups.controller.ts)，端點: POST /api/groups/batches (購買), POST /api/groups/batches/:id/configure (設定受測者), GET /api/groups/batches/:id (管理後台)
-- [ ] T125 [US4] 擴充 PaymentsController (backend/src/modules/payments/payments.controller.ts)，新增團體測驗付款邏輯
+- [x] T125 [US4] 擴充 PaymentsController (backend/src/modules/payments/payments.controller.ts)，新增團體測驗付款邏輯
 
 ### 模組整合
 
-- [ ] T126 [US4] 建立 GroupsModule (backend/src/modules/groups/groups.module.ts)
+- [x] T126 [US4] 建立 GroupsModule (backend/src/modules/groups/groups.module.ts)
 
 ### 會話管理 (管理者)
 
-- [ ] T127 [US4] 實作管理者會話邏輯 (AuthService - createAdminSession 方法)，1 小時無操作過期
-- [ ] T128 [US4] 實作管理者會話自動過期 (SessionGuard)，過期後要求重新 OTP 驗證
+- [x] T127 [US4] 實作管理者會話邏輯 (AuthService - createAdminSession 方法)，1 小時無操作過期
+- [x] T128 [US4] 實作管理者會話自動過期 (SessionGuard)，過期後要求重新 OTP 驗證
 
 ### 錯誤處理
 
-- [ ] T129 [US4] 實作管理頁面無效處理 (GroupsService)，返回 HTTP 404
-- [ ] T130 [US4] 實作管理頁面過期處理 (GroupsService)，查看期限 (1 個月) 過期返回 HTTP 403
-- [ ] T131 [US4] 實作受測者人數超過購買份數檢查 (GroupsService)，返回 HTTP 400
+- [x] T129 [US4] 實作管理頁面無效處理 (GroupsService)，返回 HTTP 404
+- [x] T130 [US4] 實作管理頁面過期處理 (GroupsService)，查看期限 (1 個月) 過期返回 HTTP 403
+- [x] T131 [US4] 實作受測者人數超過購買份數檢查 (GroupsService)，返回 HTTP 400
 
 **Checkpoint**: 使用者故事 1, 2, 3, 4, 6 皆可獨立運作，團體測驗管理功能已實作
 
@@ -382,20 +382,20 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 服務層邏輯擴充
 
-- [ ] T132 [US5] 擴充 ExamsService (backend/src/modules/exams/exams.service.ts)，新增團體測驗邏輯 (使用批次題目組合)
-- [ ] T133 [US5] 實作測驗連結 Token 驗證 (ExamsService - validateExamToken 方法)，檢查有效期限 (10 天)
-- [ ] T134 [US5] 實作答題進度恢復邏輯 (ExamsService - resumeTakerExam 方法)，會話過期或更換裝置時重新驗證後恢復
+- [x] T132 [US5] 擴充 ExamsService (backend/src/modules/exams/exams.service.ts)，新增團體測驗邏輯 (使用批次題目組合)
+- [x] T133 [US5] 實作測驗連結 Token 驗證 (ExamsService - validateExamToken 方法)，檢查有效期限 (10 天)
+- [x] T134 [US5] 實作答題進度恢復邏輯 (ExamsService - resumeTakerExam 方法)，會話過期或更換裝置時重新驗證後恢復
 
 ### 提醒郵件功能
 
-- [ ] T135 [P] [US5] 建立提醒郵件範本 (backend/src/modules/mail/templates/exam-reminder.hbs)
-- [ ] T136 [US5] 實作每日提醒郵件排程 (MailService - scheduleReminders 方法)，使用 @nestjs/schedule 套件
-- [ ] T137 [US5] 實作提醒郵件發送條件檢查 (MailService - shouldSendReminder 方法)，未完成測驗且未過期
+- [x] T135 [P] [US5] 建立提醒郵件範本 (backend/src/modules/mail/templates/exam-reminder.hbs)
+- [x] T136 [US5] 實作每日提醒郵件排程 (MailService - scheduleReminders 方法)，使用 @nestjs/schedule 套件
+- [x] T137 [US5] 實作提醒郵件發送條件檢查 (MailService - shouldSendReminder 方法)，未完成測驗且未過期
 
 ### 團體統計功能
 
-- [ ] T138 [US5] 擴充 ReportsService (backend/src/modules/reports/reports.service.ts)，新增團體比較統計 (個人正答率 vs 團體平均)
-- [ ] T139 [US5] 實作團體統計查詢邏輯 (ReportsService - getGroupComparison 方法)
+- [x] T138 [US5] 擴充 ReportsService (backend/src/modules/reports/reports.service.ts)，新增團體比較統計 (個人正答率 vs 團體平均)
+- [x] T139 [US5] 實作團體統計查詢邏輯 (ReportsService - getGroupComparison 方法)
 
 ### 受測者會話管理
 

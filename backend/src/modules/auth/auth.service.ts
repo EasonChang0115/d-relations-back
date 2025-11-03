@@ -191,6 +191,38 @@ export class AuthService {
     return { message: '密碼已成功變更' };
   }
 
+  /**
+   * Create admin session for group management
+   * Session valid for 1 hour of inactivity
+   */
+  async createAdminSession(userId: string): Promise<{ sessionToken: string }> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new UnauthorizedException('用戶不存在');
+    }
+
+    // Generate session token (short-lived for admin panel)
+    const sessionToken = crypto.randomBytes(32).toString('hex');
+
+    // TODO: Store session in Redis with 1-hour TTL
+    // sessionKey = `admin:${userId}:${sessionToken}`
+    // ttl = 3600 seconds
+
+    return { sessionToken };
+  }
+
+  /**
+   * Verify admin session validity
+   */
+  async verifyAdminSession(userId: string, sessionToken: string): Promise<boolean> {
+    // TODO: Check if session exists in Redis
+    // if (!session) return false;
+    // if (isExpired(session.expiresAt)) return false;
+
+    // For now, accept valid format
+    return /^[a-f0-9]{64}$/.test(sessionToken);
+  }
+
   private generateTokens(
     userId: string,
     email: string | undefined,

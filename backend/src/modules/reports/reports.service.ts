@@ -274,6 +274,62 @@ export class ReportsService {
     return recommendations.slice(0, 5); // Return top 5 recommendations
   }
 
+  async getGroupComparison(batchId: string, takerId: string): Promise<any> {
+    // TODO: Get taker's result from GroupTaker
+    // const taker = await groupService.getTaker(takerId);
+    // const takerAccuracy = taker.accuracyRate;
+
+    // TODO: Get batch statistics
+    // const batch = await groupService.getBatch(batchId);
+    // const groupAverage = batch.groupAccuracyRate;
+
+    // For now, return placeholder structure
+    return {
+      takerId,
+      batchId,
+      takerAccuracy: 0,
+      groupAverage: 0,
+      percentileRank: 0,
+      performanceLevel: 'average',
+      comparison: {
+        better: 0, // count of takers with lower accuracy
+        equal: 0,
+        worse: 0,
+      },
+    };
+  }
+
+  async calculateAnswerDistribution(examId: string): Promise<any> {
+    const answers = await this.answersService.findByExamId(examId);
+    const distribution: Record<string, any> = {};
+
+    for (const answer of answers) {
+      if (!distribution[answer.questionId]) {
+        distribution[answer.questionId] = {
+          questionId: answer.questionId,
+          correct: 0,
+          incorrect: 0,
+          accuracy: 0,
+        };
+      }
+
+      if (answer.isCorrect) {
+        distribution[answer.questionId].correct++;
+      } else {
+        distribution[answer.questionId].incorrect++;
+      }
+    }
+
+    // Calculate accuracy per question
+    for (const questionId in distribution) {
+      const stats = distribution[questionId];
+      const total = stats.correct + stats.incorrect;
+      stats.accuracy = total > 0 ? (stats.correct / total) * 100 : 0;
+    }
+
+    return Object.values(distribution);
+  }
+
   async remove(id: string): Promise<void> {
     const report = await this.reportRepository.findOne({ where: { id } });
     if (!report) {

@@ -275,6 +275,78 @@ export class ExamsService {
     return new ExamResponseDto(savedExam);
   }
 
+  /**
+   * Validate and start group exam using invitation token
+   */
+  async validateGroupExamToken(batchToken: string, invitationToken: string): Promise<{ valid: boolean; batchId?: string }> {
+    // TODO: Verify tokens with GroupsService
+    // - Check batch token exists and is not expired
+    // - Check invitation token matches batch
+    // - Return batch ID if valid
+
+    // For now, accept any format
+    const isValid = /^[a-f0-9-]{36}$/.test(batchToken) && /^[a-f0-9-]{36}$/.test(invitationToken);
+    return { valid: isValid };
+  }
+
+  /**
+   * Start group exam for taker
+   */
+  async startGroupExam(
+    batchId: string,
+    takerId: string,
+    questionSequence: string[],
+    randomSeed: string,
+  ): Promise<ExamResponseDto> {
+    const config = EXAM_CONFIG.GROUP;
+    if (!config) {
+      throw new BadRequestException('無效的測驗版本');
+    }
+
+    // Calculate expiry (30 days for group exams)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    const exam = this.examRepository.create({
+      sessionId: takerId,
+      examType: 'group',
+      version: 'GROUP',
+      status: ExamStatus.NOT_STARTED,
+      totalQuestions: questionSequence.length,
+      currentQuestion: 0,
+      questionSequence,
+      randomSeed,
+      expiresAt,
+      // TODO: Add group-specific fields once schema is updated
+      // batchId,
+    });
+
+    const savedExam = await this.examRepository.save(exam);
+    return new ExamResponseDto(savedExam);
+  }
+
+  /**
+   * Resume taker exam after session expiry or device change
+   */
+  async resumeTakerExam(examId: string, deviceFingerprint: string): Promise<{ resumeAllowed: boolean; reason?: string }> {
+    const exam = await this.findOne(examId);
+
+    // Check if exam is expired
+    if (exam.expiresAt && new Date() > exam.expiresAt) {
+      return { resumeAllowed: false, reason: '測驗已過期' };
+    }
+
+    // Check if exam is completed
+    if (exam.status === ExamStatus.COMPLETED) {
+      return { resumeAllowed: false, reason: '測驗已完成' };
+    }
+
+    // Device fingerprint validation (TODO: compare with original device)
+    // If different device, require re-authentication
+    // For now, always allow resume
+    return { resumeAllowed: true };
+  }
+
   async remove(id: string): Promise<void> {
     const exam = await this.findOne(id);
     await this.examRepository.softRemove(exam);

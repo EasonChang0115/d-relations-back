@@ -1,0 +1,45 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; text-align: center; margin-bottom: 20px;">
+    <h1 style="color: #007bff; margin: 0;">📝 測驗提醒</h1>
+  </div>
+
+  <div style="padding: 0 20px;">
+    <p style="color: #333; font-size: 16px;">您好 {{takerName}},</p>
+
+    <p style="color: #555; font-size: 14px; line-height: 1.6;">
+      這是友善的提醒，您參與的群組測驗 <strong>{{batchName}}</strong> 尚未完成。
+    </p>
+
+    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 3px;">
+      <p style="color: #856404; margin: 0; font-weight: bold;">⏰ 測驗將於 {{expiresAt}} 過期</p>
+      <p style="color: #856404; margin: 10px 0 0 0;">請盡快完成測驗以免錯過。</p>
+    </div>
+
+    <p style="color: #555; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+      <strong>測驗詳情：</strong>
+    </p>
+
+    <ul style="color: #555; font-size: 14px; line-height: 1.8;">
+      <li>題目數量：{{questionCount}} 題</li>
+      <li>批次名稱：{{batchName}}</li>
+      <li>狀態：未完成</li>
+    </ul>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="{{examUrl}}" style="background-color: #ffc107; color: #333; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+        現在完成測驗
+      </a>
+    </div>
+
+    <p style="color: #666; font-size: 12px; line-height: 1.6; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px;">
+      如有任何問題，請聯繫測驗管理員。<br>
+      此郵件由系統自動發送，請勿直接回覆。
+    </p>
+  </div>
+
+  <div style="background-color: #f0f0f0; padding: 15px; text-align: center; margin-top: 30px; border-radius: 5px;">
+    <p style="color: #666; font-size: 12px; margin: 0;">
+      醫學細胞識別能力測驗平台
+    </p>
+  </div>
+</div>

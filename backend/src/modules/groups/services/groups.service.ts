@@ -218,6 +218,98 @@ export class GroupsService {
   }
 
   /**
+   * Get batch by token (for taker access)
+   */
+  async getBatchByToken(batchToken: string): Promise<GroupExamBatch> {
+    const batch = await this.batchRepository.findOne({ where: { batchToken } });
+    if (!batch) {
+      throw new NotFoundException('批次不存在');
+    }
+
+    return batch;
+  }
+
+  /**
+   * Get taker by invitation token
+   */
+  async getTakerByInvitationToken(invitationToken: string): Promise<GroupTaker> {
+    const taker = await this.takerRepository.findOne({ where: { invitationToken } });
+    if (!taker) {
+      throw new NotFoundException('邀請令牌無效');
+    }
+
+    return taker;
+  }
+
+  /**
+   * Update taker exam and result
+   */
+  async updateTakerResult(
+    takerId: string,
+    examId: string,
+    correctAnswers: number,
+    totalQuestions: number,
+    timeSpentSeconds: number,
+  ): Promise<void> {
+    const taker = await this.takerRepository.findOne({ where: { id: takerId } });
+    if (!taker) {
+      throw new NotFoundException('受測者不存在');
+    }
+
+    const accuracyRate = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+
+    taker.examId = examId;
+    taker.correctAnswers = correctAnswers;
+    taker.totalQuestions = totalQuestions;
+    taker.accuracyRate = accuracyRate;
+    taker.timeSpentSeconds = timeSpentSeconds;
+    taker.status = TakerStatus.COMPLETED;
+    taker.completedAt = new Date();
+
+    await this.takerRepository.save(taker);
+
+    // Update batch statistics
+    const batch = await this.batchRepository.findOne({ where: { id: taker.batchId } });
+    if (batch) {
+      await this.calculateGroupStats(batch.id);
+    }
+  }
+
+  /**
+   * Check if batch view has expired
+   */
+  async isBatchViewExpired(batchId: string): Promise<boolean> {
+    const batch = await this.batchRepository.findOne({ where: { id: batchId } });
+    if (!batch) {
+      throw new NotFoundException('批次不存在');
+    }
+
+    if (!batch.viewExpiresAt) {
+      return false;
+    }
+
+    return new Date() > batch.viewExpiresAt;
+  }
+
+  /**
+   * Verify taker count vs purchase
+   */
+  async verifyTakerCount(batchId: string, takerEmails: string[]): Promise<boolean> {
+    const batch = await this.batchRepository.findOne({ where: { id: batchId } });
+    if (!batch) {
+      throw new NotFoundException('批次不存在');
+    }
+
+    if (takerEmails.length > batch.takerCount) {
+      throw new BadRequestException(
+        `受測者數量 (${takerEmails.length}) 超過購買份數 (${batch.takerCount})`,
+      );
+    }
+
+    return true;
+  }
+
+  /**
    * Find batch by ID and verify admin
    */
   private async findBatchByIdAndAdmin(batchId: string, userId: string): Promise<GroupExamBatch> {

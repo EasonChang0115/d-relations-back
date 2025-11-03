@@ -167,4 +167,71 @@ export class MailService {
       throw error;
     }
   }
+
+  async sendExamReminder(
+    email: string,
+    reminderData: {
+      takerName: string;
+      batchName: string;
+      examUrl: string;
+      questionCount: number;
+      expiresAt: Date;
+    },
+  ): Promise<void> {
+    try {
+      const { takerName, batchName, examUrl, questionCount, expiresAt } = reminderData;
+
+      await this.transporter.sendMail({
+        from: this.configService.get('MAIL_FROM', 'noreply@medical-test.com'),
+        to: email,
+        subject: `提醒：測驗即將過期 - ${batchName}`,
+        html: `
+          <h2>📝 測驗提醒</h2>
+          <p>您好 ${takerName},</p>
+          <p>這是友善的提醒，您參與的群組測驗 <strong>${batchName}</strong> 尚未完成。</p>
+          <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+            <p style="color: #856404; margin: 0; font-weight: bold;">⏰ 測驗將於 ${new Date(expiresAt).toLocaleDateString('zh-TW')} 過期</p>
+            <p style="color: #856404; margin: 10px 0 0 0;">請盡快完成測驗以免錯過。</p>
+          </div>
+          <p><strong>測驗詳情：</strong></p>
+          <ul>
+            <li>題目數量：${questionCount} 題</li>
+            <li>批次名稱：${batchName}</li>
+            <li>狀態：未完成</li>
+          </ul>
+          <p><a href="${examUrl}" style="background-color: #ffc107; color: #333; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">現在完成測驗</a></p>
+        `,
+      });
+    } catch (error) {
+      console.error('Failed to send exam reminder email:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Schedule reminder emails for incomplete exams
+   * Should be called by @nestjs/schedule
+   */
+  async scheduleReminders(): Promise<void> {
+    // TODO: Query incomplete exams expiring soon
+    // SELECT * FROM exams WHERE status != 'completed' AND view_expires_at < NOW() + INTERVAL 3 DAYS
+
+    // TODO: For each exam, check shouldSendReminder()
+    // if (shouldSendReminder(exam)) {
+    //   await sendExamReminder(...)
+    // }
+  }
+
+  /**
+   * Check if reminder should be sent for an exam
+   */
+  async shouldSendReminder(examId: string): Promise<boolean> {
+    // TODO: Query exam
+    // - Check if exam is completed (if yes, don't send)
+    // - Check if exam has expired (if yes, don't send)
+    // - Check if reminder was already sent (once per exam)
+    // - Check if exam expires within 3 days (if yes, send)
+
+    return false; // Placeholder
+  }
 }
