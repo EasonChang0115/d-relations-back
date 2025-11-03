@@ -1,1 +1,1 @@
-開始實作 Phase 4: User Story 1 - 免費版測驗
+/speckit.implement

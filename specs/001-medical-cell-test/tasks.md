@@ -33,14 +33,14 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 **目的**: 建立專案基礎結構與開發環境
 
-- [ ] T001 建立 NestJS 專案結構，按照 plan.md 的目錄架構建立所有模組資料夾
-- [ ] T002 初始化 TypeScript 專案 (tsconfig.json, tsconfig.build.json)，啟用 strict mode
-- [ ] T003 [P] 配置 ESLint (eslintrc.js) 與 Prettier (.prettierrc)，遵循 NestJS 最佳實踐
-- [ ] T004 [P] 設定 Jest (jest.config.js) 測試框架，覆蓋率門檻 80%
-- [ ] T005 [P] 建立環境變數範本 (.env.example)，包含所有必要設定 (資料庫、JWT、AWS、Stripe、Mail)
-- [ ] T006 [P] 建立 Docker Compose 配置 (docker-compose.yml)，包含 MySQL 8.0、Redis 7、API 服務
-- [ ] T007 [P] 建立 Dockerfile，針對 Node.js 18 LTS 優化
-- [ ] T008 安裝所有主要依賴套件 (package.json): NestJS 11.0.1, TypeORM 0.3.25, mysql2, Passport, bcrypt, AWS SDK, Stripe, nodemailer, pdf-lib, exceljs
+- [x] T001 建立 NestJS 專案結構，按照 plan.md 的目錄架構建立所有模組資料夾
+- [x] T002 初始化 TypeScript 專案 (tsconfig.json, tsconfig.build.json)，啟用 strict mode
+- [x] T003 [P] 配置 ESLint (eslintrc.js) 與 Prettier (.prettierrc)，遵循 NestJS 最佳實踐
+- [x] T004 [P] 設定 Jest (jest.config.js) 測試框架，覆蓋率門檻 80%
+- [x] T005 [P] 建立環境變數範本 (.env.example)，包含所有必要設定 (資料庫、JWT、AWS、Stripe、Mail)
+- [x] T006 [P] 建立 Docker Compose 配置 (docker-compose.yml)，包含 MySQL 8.0、Redis 7、API 服務
+- [x] T007 [P] 建立 Dockerfile，針對 Node.js 18 LTS 優化
+- [x] T008 安裝所有主要依賴套件 (package.json): NestJS 11.0.1, TypeORM 0.3.25, mysql2, Passport, bcrypt, AWS SDK, Stripe, nodemailer, pdf-lib, exceljs
 
 ---
 
@@ -52,37 +52,37 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 資料庫與 ORM 設定
 
-- [ ] T009 設定 TypeORM 配置 (backend/src/config/database.config.ts)，包含連線池、日誌、自動同步設定
-- [ ] T010 建立資料庫遷移基礎架構 (backend/src/database/migrations/)，設定遷移指令於 package.json
+- [x] T009 設定 TypeORM 配置 (backend/src/config/database.config.ts)，包含連線池、日誌、自動同步設定
+- [x] T010 建立資料庫遷移基礎架構 (backend/src/database/migrations/)，設定遷移指令於 package.json
 
 ### 認證與授權框架
 
-- [ ] T011 [P] 設定 JWT 配置 (backend/src/config/jwt.config.ts)，包含 Access Token (1h) 與 Refresh Token (10d)
-- [ ] T012 [P] 實作 JWT 策略 (backend/src/modules/auth/strategies/jwt.strategy.ts)，整合 Passport
-- [ ] T013 [P] 實作 JWT 認證守衛 (backend/src/common/guards/jwt-auth.guard.ts)
-- [ ] T014 [P] 實作角色守衛 (backend/src/common/guards/roles.guard.ts)，支援 4 種使用者角色
-- [ ] T015 [P] 建立自訂裝飾器 (backend/src/common/decorators/current-user.decorator.ts, roles.decorator.ts)
+- [x] T011 [P] 設定 JWT 配置 (backend/src/config/jwt.config.ts)，包含 Access Token (1h) 與 Refresh Token (10d)
+- [x] T012 [P] 實作 JWT 策略 (backend/src/modules/auth/strategies/jwt.strategy.ts)，整合 Passport
+- [x] T013 [P] 實作 JWT 認證守衛 (backend/src/common/guards/jwt-auth.guard.ts)
+- [x] T014 [P] 實作角色守衛 (backend/src/common/guards/roles.guard.ts)，支援 4 種使用者角色
+- [x] T015 [P] 建立自訂裝飾器 (backend/src/common/decorators/current-user.decorator.ts, roles.decorator.ts)
 
 ### API 架構與中間件
 
-- [ ] T016 [P] 建立全域例外過濾器 (backend/src/common/filters/http-exception.filter.ts)，統一錯誤格式
-- [ ] T017 [P] 建立轉換攔截器 (backend/src/common/interceptors/transform.interceptor.ts)，統一 API 回應格式
-- [ ] T018 [P] 建立日誌攔截器 (backend/src/common/interceptors/logging.interceptor.ts)，記錄請求與回應
-- [ ] T019 [P] 設定全域驗證管道 (backend/src/main.ts)，整合 class-validator 與 class-transformer
-- [ ] T020 [P] 建立共用 DTO (backend/src/common/dto/pagination.dto.ts, response.dto.ts, error-response.dto.ts)
+- [x] T016 [P] 建立全域例外過濾器 (backend/src/common/filters/http-exception.filter.ts)，統一錯誤格式
+- [x] T017 [P] 建立轉換攔截器 (backend/src/common/interceptors/transform.interceptor.ts)，統一 API 回應格式
+- [x] T018 [P] 建立日誌攔截器 (backend/src/common/interceptors/logging.interceptor.ts)，記錄請求與回應
+- [x] T019 [P] 設定全域驗證管道 (backend/src/main.ts)，整合 class-validator 與 class-transformer
+- [x] T020 [P] 建立共用 DTO (backend/src/common/dto/pagination.dto.ts, response.dto.ts, error-response.dto.ts)
 
 ### 外部服務配置
 
-- [ ] T021 [P] 設定 AWS S3 配置 (backend/src/config/aws.config.ts)，包含 Bucket 名稱、Region、認證
-- [ ] T022 [P] 設定郵件服務配置 (backend/src/config/mail.config.ts)，整合 nodemailer 與 AWS SES
-- [ ] T023 [P] 設定 Stripe 配置 (backend/src/config/stripe.config.ts)，包含 Secret Key 與 Webhook Secret
-- [ ] T024 [P] 設定 Redis 配置 (backend/src/config/redis.config.ts)，用於 Session 與 Queue
+- [x] T021 [P] 設定 AWS S3 配置 (backend/src/config/aws.config.ts)，包含 Bucket 名稱、Region、認證
+- [x] T022 [P] 設定郵件服務配置 (backend/src/config/mail.config.ts)，整合 nodemailer 與 AWS SES
+- [x] T023 [P] 設定 Stripe 配置 (backend/src/config/stripe.config.ts)，包含 Secret Key 與 Webhook Secret
+- [x] T024 [P] 設定 Redis 配置 (backend/src/config/redis.config.ts)，用於 Session 與 Queue
 
 ### 應用程式主模組
 
-- [ ] T025 建立 App Module (backend/src/app.module.ts)，整合所有功能模組與設定
-- [ ] T026 建立 App Controller (backend/src/app.controller.ts)，實作健康檢查端點 GET /health
-- [ ] T027 建立主進入點 (backend/src/main.ts)，設定 Swagger、CORS、全域管道、全域過濾器
+- [x] T025 建立 App Module (backend/src/app.module.ts)，整合所有功能模組與設定
+- [x] T026 建立 App Controller (backend/src/app.controller.ts)，實作健康檢查端點 GET /health
+- [x] T027 建立主進入點 (backend/src/main.ts)，設定 Swagger、CORS、全域管道、全域過濾器
 
 **Checkpoint**: 基礎建設完成 - 可開始平行開發使用者故事
 
@@ -96,19 +96,19 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 資料實體 (Models)
 
-- [ ] T028 [P] [US1] 建立 User 實體 (backend/src/modules/users/entities/user.entity.ts)，包含所有欄位、關聯、驗證規則、索引
-- [ ] T029 [P] [US1] 建立 Question 實體 (backend/src/modules/questions/entities/question.entity.ts)，支援兩種測驗類型 (末梢血版、骨髓版)
-- [ ] T030 [P] [US1] 建立 CellImage 實體 (backend/src/modules/questions/entities/cell-image.entity.ts)，每種細胞 10 張圖片
-- [ ] T031 [P] [US1] 建立 Exam 實體 (backend/src/modules/exams/entities/exam.entity.ts)，包含測驗狀態、版本、題目序列 (JSON)
-- [ ] T032 [P] [US1] 建立 AnswerRecord 實體 (backend/src/modules/answers/entities/answer-record.entity.ts)，記錄每一題答案與正確性
-- [ ] T033 [P] [US1] 建立 ResultReport 實體 (backend/src/modules/reports/entities/result-report.entity.ts)，包含正答率、有效期限
+- [x] T028 [P] [US1] 建立 User 實體 (backend/src/modules/users/entities/user.entity.ts)，包含所有欄位、關聯、驗證規則、索引
+- [x] T029 [P] [US1] 建立 Question 實體 (backend/src/modules/questions/entities/question.entity.ts)，支援兩種測驗類型 (末梢血版、骨髓版)
+- [x] T030 [P] [US1] 建立 CellImage 實體 (backend/src/modules/questions/entities/cell-image.entity.ts)，每種細胞 10 張圖片
+- [x] T031 [P] [US1] 建立 Exam 實體 (backend/src/modules/exams/entities/exam.entity.ts)，包含測驗狀態、版本、題目序列 (JSON)
+- [x] T032 [P] [US1] 建立 AnswerRecord 實體 (backend/src/modules/answers/entities/answer-record.entity.ts)，記錄每一題答案與正確性
+- [x] T033 [P] [US1] 建立 ResultReport 實體 (backend/src/modules/reports/entities/result-report.entity.ts)，包含正答率、有效期限
 
 ### DTO 與驗證
 
-- [ ] T034 [P] [US1] 建立 User DTO (backend/src/modules/users/dto/create-user.dto.ts, update-user.dto.ts, user-response.dto.ts)
-- [ ] T035 [P] [US1] 建立 Exam DTO (backend/src/modules/exams/dto/start-exam.dto.ts, exam-response.dto.ts)
-- [ ] T036 [P] [US1] 建立 Answer DTO (backend/src/modules/answers/dto/submit-answer.dto.ts)
-- [ ] T037 [P] [US1] 建立 Report DTO (backend/src/modules/reports/dto/report-response.dto.ts)
+- [x] T034 [P] [US1] 建立 User DTO (backend/src/modules/users/dto/create-user.dto.ts, update-user.dto.ts, user-response.dto.ts)
+- [x] T035 [P] [US1] 建立 Exam DTO (backend/src/modules/exams/dto/start-exam.dto.ts, exam-response.dto.ts)
+- [x] T036 [P] [US1] 建立 Answer DTO (backend/src/modules/answers/dto/submit-answer.dto.ts)
+- [x] T037 [P] [US1] 建立 Report DTO (backend/src/modules/reports/dto/report-response.dto.ts)
 
 ### 服務層邏輯
 
@@ -128,16 +128,16 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 模組整合
 
-- [ ] T048 [US1] 建立 UsersModule (backend/src/modules/users/users.module.ts)，註冊 Controller、Service、Repository
-- [ ] T049 [US1] 建立 QuestionsModule (backend/src/modules/questions/questions.module.ts)
-- [ ] T050 [US1] 建立 ExamsModule (backend/src/modules/exams/exams.module.ts)
-- [ ] T051 [US1] 建立 AnswersModule (backend/src/modules/answers/answers.module.ts)
-- [ ] T052 [US1] 建立 ReportsModule (backend/src/modules/reports/reports.module.ts)
+- [x] T048 [US1] 建立 UsersModule (backend/src/modules/users/users.module.ts)，註冊 Controller、Service、Repository
+- [x] T049 [US1] 建立 QuestionsModule (backend/src/modules/questions/questions.module.ts)
+- [x] T050 [US1] 建立 ExamsModule (backend/src/modules/exams/exams.module.ts)
+- [x] T051 [US1] 建立 AnswersModule (backend/src/modules/answers/answers.module.ts)
+- [x] T052 [US1] 建立 ReportsModule (backend/src/modules/reports/reports.module.ts)
 
 ### 資料庫種子資料
 
-- [ ] T053 [US1] 建立題庫種子資料腳本 (backend/src/database/seeds/questions.seed.ts)，至少 100 題 (末梢血版 + 骨髓版)
-- [ ] T054 [US1] 建立細胞圖片種子資料腳本 (backend/src/database/seeds/cell-images.seed.ts)，每種細胞 10 張圖片 (模擬 S3 URL)
+- [x] T053 [US1] 建立題庫種子資料腳本 (backend/src/database/seeds/questions.seed.ts)，至少 100 題 (末梢血版 + 骨髓版)
+- [x] T054 [US1] 建立細胞圖片種子資料腳本 (backend/src/database/seeds/cell-images.seed.ts)，每種細胞 10 張圖片 (模擬 S3 URL)
 
 ### 錯誤處理與驗證
 
