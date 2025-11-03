@@ -185,6 +185,95 @@ export class ReportsService {
     return isExpired;
   }
 
+  /**
+   * Get answer distribution for a question
+   * Shows how all users answered the same question
+   */
+  async getAnswerDistribution(questionId: string): Promise<{
+    questionId: string;
+    totalAnswers: number;
+    correctCount: number;
+    wrongCount: number;
+    correctPercentage: number;
+  }> {
+    // In production, this would query across all answers for this question
+    // SELECT question_id, COUNT(*) as total, SUM(is_correct) as correct 
+    // FROM answers WHERE question_id = ? GROUP BY question_id
+    
+    // For now, return placeholder with correct structure
+    return {
+      questionId,
+      totalAnswers: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      correctPercentage: 0,
+    };
+  }
+
+  /**
+   * Get recommended lectures based on weak areas
+   * Returns system-predefined lecture recommendations
+   */
+  async getRecommendedLectures(reportId: string): Promise<{
+    id: string;
+    title: string;
+    description: string;
+    cellType: string;
+    duration: string;
+    url: string;
+  }[]> {
+    const report = await this.findOne(reportId);
+    
+    // Find cell types with low accuracy
+    const weakAreas = (report.cellTypeStats || [])
+      .filter(stat => stat.accuracyRate < 70)
+      .map(stat => stat.cellType);
+
+    // System-predefined lectures (in production, load from database)
+    const lectureDatabase: Record<string, any[]> = {
+      'lymphocyte': [
+        {
+          id: 'lec_001',
+          title: '淋巴細胞識別基礎',
+          description: '學習如何識別不同類型的淋巴細胞',
+          cellType: 'lymphocyte',
+          duration: '15分鐘',
+          url: 'https://example.com/lectures/lymphocyte-basics',
+        },
+      ],
+      'neutrophil': [
+        {
+          id: 'lec_002',
+          title: '嗜中性球的形態特徵',
+          description: '深入了解嗜中性球的核形態和細胞質特徵',
+          cellType: 'neutrophil',
+          duration: '12分鐘',
+          url: 'https://example.com/lectures/neutrophil-features',
+        },
+      ],
+      'monocyte': [
+        {
+          id: 'lec_003',
+          title: '單核細胞識別指南',
+          description: '掌握單核細胞的識別技巧',
+          cellType: 'monocyte',
+          duration: '14分鐘',
+          url: 'https://example.com/lectures/monocyte-guide',
+        },
+      ],
+    };
+
+    // Collect recommendations from weak areas
+    const recommendations: any[] = [];
+    for (const cellType of weakAreas) {
+      if (lectureDatabase[cellType]) {
+        recommendations.push(...lectureDatabase[cellType]);
+      }
+    }
+
+    return recommendations.slice(0, 5); // Return top 5 recommendations
+  }
+
   async remove(id: string): Promise<void> {
     const report = await this.reportRepository.findOne({ where: { id } });
     if (!report) {

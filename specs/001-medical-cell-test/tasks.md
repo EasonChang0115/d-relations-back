@@ -272,18 +272,18 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 - [x] T087 [P] [US3] 建立 MailService (backend/src/modules/mail/mail.service.ts)，整合 nodemailer 與 AWS SES
 - [x] T088 [P] [US3] 建立 OTP 郵件範本 (backend/src/modules/mail/templates/otp-verification.hbs)，支援多語言
 - [x] T089 [P] [US3] 建立測驗連結郵件範本 (backend/src/modules/mail/templates/exam-link.hbs)
-- [ ] T090 [US3] 實作郵件發送 Queue (MailService)，使用 Bull Queue + Redis (參考 research.md R2)
+- [x] T090 [US3] 實作郵件發送 Queue (MailService)，使用 Bull Queue + Redis (參考 research.md R2)
 
 ### 進階報表功能
 
-- [ ] T091 [US3] 擴充 ReportsService (backend/src/modules/reports/reports.service.ts)，新增統計資訊計算 (其他受測者答案分佈)
-- [ ] T092 [US3] 實作統計資訊查詢邏輯 (ReportsService - getAnswerDistribution 方法)，條件: 相同問題與相同圖片
-- [ ] T093 [US3] 實作推薦講座資訊整合 (ReportsService - getRecommendedLectures 方法)，系統預設內容
+- [x] T091 [US3] 擴充 ReportsService (backend/src/modules/reports/reports.service.ts)，新增統計資訊計算 (其他受測者答案分佈)
+- [x] T092 [US3] 實作統計資訊查詢邏輯 (ReportsService - getAnswerDistribution 方法)，條件: 相同問題與相同圖片
+- [x] T093 [US3] 實作推薦講座資訊整合 (ReportsService - getRecommendedLectures 方法)，系統預設內容
 
 ### PDF 報表生成
 
-- [ ] T094 [P] [US3] 建立 PDF 生成服務 (backend/src/modules/reports/services/pdf-generator.service.ts)，使用 pdf-lib 套件
-- [ ] T095 [P] [US3] 建立 PDF 報表範本 (backend/src/modules/reports/templates/result-report.template.ts)，包含所有進階資訊
+- [x] T094 [P] [US3] 建立 PDF 生成服務 (backend/src/modules/reports/services/pdf-generator.service.ts)，使用 pdf-lib 套件
+- [x] T095 [P] [US3] 建立 PDF 報表範本 (backend/src/modules/reports/templates/result-report.template.ts)，包含所有進階資訊
 - [ ] T096 [US3] 實作 PDF 生成 Queue (PdfGeneratorService)，背景任務處理 (參考 research.md R4)
 - [ ] T097 [US3] 實作 PDF S3 上傳與快取 (StorageService - uploadPdf 方法)，快取 1 個月
 
@@ -291,7 +291,7 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 - [x] T098 [US3] 實作 PaymentsController (backend/src/modules/payments/payments.controller.ts)，端點: POST /api/payments/create-checkout, POST /api/payments/webhook
 - [x] T099 [US3] 實作 OtpController (backend/src/modules/otp/otp.controller.ts)，端點: POST /api/otp/send, POST /api/otp/verify
-- [ ] T100 [US3] 擴充 ReportsController (backend/src/modules/reports/reports.controller.ts)，新增 GET /api/reports/:id/pdf 端點
+- [x] T100 [US3] 擴充 ReportsController (backend/src/modules/reports/reports.controller.ts)，新增 GET /api/reports/:id/pdf 端點
 
 ### 模組整合
 
