@@ -112,19 +112,19 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 服務層邏輯
 
-- [ ] T038 [US1] 實作 UsersService (backend/src/modules/users/users.service.ts)，提供使用者資訊登錄與查詢功能
-- [ ] T039 [US1] 實作 QuestionsService (backend/src/modules/questions/questions.service.ts)，從資料庫隨機選取題目
-- [ ] T040 [US1] 實作隨機出題演算法 (backend/src/modules/exams/exams.service.ts - generateQuestions 方法)，使用 Seed-based Random (參考 research.md R1)
-- [ ] T041 [US1] 實作 ExamsService (backend/src/modules/exams/exams.service.ts)，處理測驗建立、進度儲存、題目載入邏輯
-- [ ] T042 [US1] 實作 AnswersService (backend/src/modules/answers/answers.service.ts)，處理答案提交、正確性驗證、進度更新
-- [ ] T043 [US1] 實作 ReportsService (backend/src/modules/reports/reports.service.ts)，計算正答率、生成結果報表、檢查有效期限
+- [x] T038 [US1] 實作 UsersService (backend/src/modules/users/users.service.ts)，提供使用者資訊登錄與查詢功能
+- [x] T039 [US1] 實作 QuestionsService (backend/src/modules/questions/questions.service.ts)，從資料庫隨機選取題目
+- [x] T040 [US1] 實作隨機出題演算法 (backend/src/modules/exams/exams.service.ts - generateQuestions 方法)，使用 Seed-based Random (參考 research.md R1)
+- [x] T041 [US1] 實作 ExamsService (backend/src/modules/exams/exams.service.ts)，處理測驗建立、進度儲存、題目載入邏輯
+- [x] T042 [US1] 實作 AnswersService (backend/src/modules/answers/answers.service.ts)，處理答案提交、正確性驗證、進度更新
+- [x] T043 [US1] 實作 ReportsService (backend/src/modules/reports/reports.service.ts)，計算正答率、生成結果報表、檢查有效期限
 
 ### API 端點 (Controllers)
 
-- [ ] T044 [US1] 實作 UsersController (backend/src/modules/users/users.controller.ts)，端點: GET /api/users/profile, PUT /api/users/profile
-- [ ] T045 [US1] 實作 ExamsController (backend/src/modules/exams/exams.controller.ts)，端點: POST /api/exams/start, GET /api/exams/:id/current
-- [ ] T046 [US1] 實作 AnswersController (backend/src/modules/answers/answers.controller.ts)，端點: POST /api/answers/submit
-- [ ] T047 [US1] 實作 ReportsController (backend/src/modules/reports/reports.controller.ts)，端點: GET /api/reports/:id
+- [x] T044 [US1] 實作 UsersController (backend/src/modules/users/users.controller.ts)，端點: GET /api/users/profile, PUT /api/users/profile
+- [x] T045 [US1] 實作 ExamsController (backend/src/modules/exams/exams.controller.ts)，端點: POST /api/exams/start, GET /api/exams/:id/current
+- [x] T046 [US1] 實作 AnswersController (backend/src/modules/answers/answers.controller.ts)，端點: POST /api/answers/submit
+- [x] T047 [US1] 實作 ReportsController (backend/src/modules/reports/reports.controller.ts)，端點: GET /api/reports/:id
 
 ### 模組整合
 
@@ -141,8 +141,8 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 錯誤處理與驗證
 
-- [ ] T055 [US1] 實作測驗狀態驗證邏輯，防止重複作答、返回修改答案 (ExamsService)
-- [ ] T056 [US1] 實作報表有效期限檢查 (ReportsService)，7 天過期後返回 HTTP 403
+- [x] T055 [US1] 實作測驗狀態驗證邏輯，防止重複作答、返回修改答案 (ExamsService)
+- [x] T056 [US1] 實作報表有效期限檢查 (ReportsService)，7 天過期後返回 HTTP 403
 
 **Checkpoint**: 使用者故事 1 (免費版測驗) 應可完整運作並獨立測試
 
@@ -158,22 +158,22 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 資料驗證增強
 
-- [ ] T057 [P] [US2] 擴充 CreateUserDto (backend/src/modules/users/dto/create-user.dto.ts)，新增 organization_code、job_title、certification_status 欄位驗證
-- [ ] T058 [P] [US2] 建立 Email 格式驗證器 (backend/src/common/validators/email.validator.ts)，遵循 RFC 5322
+- [x] T057 [P] [US2] 擴充 CreateUserDto (backend/src/modules/users/dto/create-user.dto.ts)，新增 organization_code、job_title、certification_status 欄位驗證
+- [x] T058 [P] [US2] 建立 Email 格式驗證器 (backend/src/common/validators/email.validator.ts)，遵循 RFC 5322
 
 ### 服務層邏輯增強
 
-- [ ] T059 [US2] 擴充 UsersService (backend/src/modules/users/users.service.ts)，新增 findByEmail、updateUserInfo 方法
-- [ ] T060 [US2] 實作使用者資訊自動填入邏輯 (UsersService - getUserProfile 方法)
+- [x] T059 [US2] 擴充 UsersService (backend/src/modules/users/users.service.ts)，新增 findByEmail、updateUserInfo 方法
+- [x] T060 [US2] 實作使用者資訊自動填入邏輯 (UsersService - getUserProfile 方法)
 
 ### API 端點增強
 
-- [ ] T061 [US2] 擴充 UsersController (backend/src/modules/users/users.controller.ts)，新增 POST /api/users/register 端點 (無需密碼)
+- [x] T061 [US2] 擴充 UsersController (backend/src/modules/users/users.controller.ts)，新增 POST /api/users/register 端點 (無需密碼)
 
 ### 錯誤處理
 
-- [ ] T062 [US2] 實作 Email 重複檢查邏輯 (UsersService)，返回 HTTP 409 如 email 已存在
-- [ ] T063 [US2] 實作欄位格式錯誤處理 (ValidationPipe)，返回 HTTP 400 與詳細錯誤訊息
+- [x] T062 [US2] 實作 Email 重複檢查邏輯 (UsersService)，返回 HTTP 409 如 email 已存在
+- [x] T063 [US2] 實作欄位格式錯誤處理 (ValidationPipe)，返回 HTTP 400 與詳細錯誤訊息
 
 **Checkpoint**: 使用者故事 1 與 2 皆可獨立運作
 
@@ -189,26 +189,26 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 隨機演算法完善
 
-- [ ] T064 [P] [US6] 建立 Seed 生成工具 (backend/src/utils/random.util.ts)，使用 SHA-256 雜湊批次 ID
-- [ ] T065 [P] [US6] 整合 seedrandom 套件 (npm install seedrandom @types/seedrandom)，實作 Mersenne Twister 演算法
-- [ ] T066 [US6] 實作圖片隨機選擇邏輯 (ExamsService - selectRandomImage 方法)，每種細胞 10 張圖片隨機選一張
+- [x] T064 [P] [US6] 建立 Seed 生成工具 (backend/src/utils/random.util.ts)，使用 SHA-256 雜湊批次 ID
+- [x] T065 [P] [US6] 整合 seedrandom 套件 (npm install seedrandom @types/seedrandom)，實作 Mersenne Twister 演算法
+- [x] T066 [US6] 實作圖片隨機選擇邏輯 (ExamsService - selectRandomImage 方法)，每種細胞 10 張圖片隨機選一張
 
 ### 答題流程限制
 
-- [ ] T067 [US6] 實作答題進度追蹤 (ExamsService - getCurrentQuestion 方法)，記錄當前題號於資料庫
-- [ ] T068 [US6] 實作禁止返回修改邏輯 (AnswersController)，檢查 question_sequence 是否大於當前進度
-- [ ] T069 [US6] 實作跳過題目邏輯 (AnswersService - skipQuestion 方法)，自動記錄為答錯
+- [x] T067 [US6] 實作答題進度追蹤 (ExamsService - getCurrentQuestion 方法)，記錄當前題號於資料庫
+- [x] T068 [US6] 實作禁止返回修改邏輯 (AnswersController)，檢查 question_sequence 是否大於當前進度
+- [x] T069 [US6] 實作跳過題目邏輯 (AnswersService - skipQuestion 方法)，自動記錄為答錯
 
 ### 快取優化
 
-- [ ] T070 [US6] 實作題目序列快取 (ExamsService)，使用 Redis 快取生成的題目組合 (10 天 TTL)
-- [ ] T071 [US6] 實作批次 ID 快取 (GroupsService)，確保團體測驗題目一致性
+- [x] T070 [US6] 實作題目序列快取 (ExamsService)，使用 Redis 快取生成的題目組合 (10 天 TTL)
+- [x] T071 [US6] 實作批次 ID 快取 (GroupsService)，確保團體測驗題目一致性
 
 ### 邊界情況處理
 
-- [ ] T072 [US6] 實作題目不足檢查 (QuestionsService - validateQuestionPool 方法)，少於 15/20 題時返回錯誤
-- [ ] T073 [US6] 實作網路中斷恢復機制 (ExamsService - resumeExam 方法)，從上次進度繼續
-- [ ] T074 [US6] 實作測驗重複開始防護 (ExamsService - checkExamStatus 方法)，已開始或已完成的測驗返回 HTTP 400
+- [x] T072 [US6] 實作題目不足檢查 (QuestionsService - validateQuestionPool 方法)，少於 15/20 題時返回錯誤
+- [x] T073 [US6] 實作網路中斷恢復機制 (ExamsService - resumeExam 方法)，從上次進度繼續
+- [x] T074 [US6] 實作測驗重複開始防護 (ExamsService - checkExamStatus 方法)，已開始或已完成的測驗返回 HTTP 400
 
 **Checkpoint**: 使用者故事 1, 2, 6 皆可獨立運作，免費版測驗完整功能已實作
 

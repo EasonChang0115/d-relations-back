@@ -9,6 +9,13 @@ export enum UserRole {
   GUEST = 'guest',
 }
 
+export enum CertificationStatus {
+  NONE = 'none',
+  STUDENT = 'student',
+  LICENSED = 'licensed',
+  CERTIFIED = 'certified',
+}
+
 @Entity('users')
 @Index('idx_email', ['email'])
 @Index('idx_session_id', ['sessionId'])
@@ -43,6 +50,17 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar', length: 50, nullable: true, name: 'job_title' })
   jobTitle?: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true, name: 'organization_code' })
+  organizationCode?: string;
+
+  @Column({
+    type: 'enum',
+    enum: CertificationStatus,
+    default: CertificationStatus.NONE,
+    name: 'certification_status',
+  })
+  certificationStatus!: CertificationStatus;
 
   @Column({ type: 'boolean', default: false, name: 'email_verified' })
   emailVerified!: boolean;

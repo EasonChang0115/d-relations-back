@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsEmail, IsOptional, IsEnum, MinLength, MaxLength } from 'class-validator';
-import { UserRole } from '../entities/user.entity';
+import { UserRole, CertificationStatus } from '../entities/user.entity';
 
 export class CreateUserDto {
   @ApiPropertyOptional({ description: '使用者姓名', example: '王小明' })
@@ -43,6 +43,21 @@ export class CreateUserDto {
   @IsOptional()
   @MaxLength(50)
   jobTitle?: string;
+
+  @ApiPropertyOptional({ description: '組織代碼', example: 'ORG001' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  organizationCode?: string;
+
+  @ApiPropertyOptional({ 
+    description: '證照狀態', 
+    enum: CertificationStatus,
+    default: CertificationStatus.NONE 
+  })
+  @IsEnum(CertificationStatus)
+  @IsOptional()
+  certificationStatus?: CertificationStatus;
 
   @ApiPropertyOptional({ 
     description: '使用者角色', 
