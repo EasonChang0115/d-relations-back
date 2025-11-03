@@ -325,30 +325,30 @@ description: "醫學細胞識別能力測驗平台 - 任務清單"
 
 ### 資料實體
 
-- [ ] T112 [P] [US4] 建立 GroupExamBatch 實體 (backend/src/modules/groups/entities/group-exam-batch.entity.ts)，包含管理者資訊、購買人數、題目組合、管理 Token、查看期限
+- [x] T112 [P] [US4] 建立 GroupExamBatch 實體 (backend/src/modules/groups/entities/group-exam-batch.entity.ts)，包含管理者資訊、購買人數、題目組合、管理 Token、查看期限
 
 ### DTO 與驗證
 
-- [ ] T113 [P] [US4] 建立 Group DTO (backend/src/modules/groups/dto/create-batch.dto.ts, configure-takers.dto.ts, batch-response.dto.ts)
+- [x] T113 [P] [US4] 建立 Group DTO (backend/src/modules/groups/dto/create-batch.dto.ts, configure-takers.dto.ts, batch-response.dto.ts)
 
 ### 服務層邏輯
 
-- [ ] T114 [US4] 實作 GroupsService (backend/src/modules/groups/groups.service.ts)，處理批次建立、受測者設定、進度追蹤
-- [ ] T115 [US4] 實作批次題目生成邏輯 (GroupsService - generateBatchQuestions 方法)，使用批次 ID 作為 Seed (參考 research.md R1)
-- [ ] T116 [US4] 實作管理 Token 生成 (GroupsService - generateAdminToken 方法)，UUID + 簽章驗證
-- [ ] T117 [US4] 實作受測者邀請邏輯 (GroupsService - inviteTakers 方法)，批次發送測驗連結郵件
+- [x] T114 [US4] 實作 GroupsService (backend/src/modules/groups/groups.service.ts)，處理批次建立、受測者設定、進度追蹤
+- [x] T115 [US4] 實作批次題目生成邏輯 (GroupsService - generateBatchQuestions 方法)，使用批次 ID 作為 Seed (參考 research.md R1)
+- [x] T116 [US4] 實作管理 Token 生成 (GroupsService - generateAdminToken 方法)，UUID + 簽章驗證
+- [x] T117 [US4] 實作受測者邀請邏輯 (GroupsService - inviteTakers 方法)，批次發送測驗連結郵件
 
 ### 管理後台功能
 
-- [ ] T118 [US4] 實作管理後台查詢邏輯 (GroupsService - getBatchStatus 方法)，顯示所有受測者姓名、受測日期、正答率
-- [ ] T119 [US4] 實作團體統計計算 (GroupsService - calculateGroupStats 方法)，計算團體整體正答率
+- [x] T118 [US4] 實作管理後台查詢邏輯 (GroupsService - getBatchStatus 方法)，顯示所有受測者姓名、受測日期、正答率
+- [x] T119 [US4] 實作團體統計計算 (GroupsService - calculateGroupStats 方法)，計算團體整體正答率
 - [ ] T120 [US4] 實作管理後台權限驗證 (AdminGuard - backend/src/common/guards/admin.guard.ts)，檢查管理 Token 與 Session (1 小時)
 
 ### 郵件服務擴充
 
 - [ ] T121 [P] [US4] 建立管理頁面連結郵件範本 (backend/src/modules/mail/templates/admin-link.hbs)
 - [ ] T122 [P] [US4] 建立受測者邀請郵件範本 (backend/src/modules/mail/templates/taker-invitation.hbs)
-- [ ] T123 [US4] 實作批次郵件發送邏輯 (MailService - sendBatchInvitations 方法)
+- [x] T123 [US4] 實作批次郵件發送邏輯 (MailService - sendBatchInvitations 方法)
 
 ### API 端點
 

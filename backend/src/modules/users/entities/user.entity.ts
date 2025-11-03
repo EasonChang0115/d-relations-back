@@ -80,4 +80,8 @@ export class User extends BaseEntity {
   // Relations
   @OneToMany(() => Exam, (exam) => exam.user)
   exams!: Exam[];
+
+  // Will be imported dynamically to avoid circular dependencies
+  // @OneToMany(() => GroupExamBatch, (batch) => batch.admin)
+  // groupBatches!: GroupExamBatch[];
 }

@@ -89,4 +89,82 @@ export class MailService {
       throw error;
     }
   }
+
+  async sendBatchInvitation(
+    email: string,
+    invitationData: {
+      takerName: string;
+      batchName: string;
+      examUrl: string;
+      questionCount: number;
+      expiresAt?: Date;
+    },
+  ): Promise<void> {
+    try {
+      const { takerName, batchName, examUrl, questionCount, expiresAt } = invitationData;
+
+      await this.transporter.sendMail({
+        from: this.configService.get('MAIL_FROM', 'noreply@medical-test.com'),
+        to: email,
+        subject: `群組測驗邀請 - ${batchName}`,
+        html: `
+          <h2>群組測驗邀請</h2>
+          <p>您好 ${takerName},</p>
+          <p>您已被邀請參與群組測驗：<strong>${batchName}</strong></p>
+          <p>測驗詳情：</p>
+          <ul>
+            <li>題目數量：${questionCount} 題</li>
+            <li>有效期限：${expiresAt ? new Date(expiresAt).toLocaleDateString('zh-TW') : '30 天'}</li>
+          </ul>
+          <p>請點擊下方連結開始測驗：</p>
+          <p><a href="${examUrl}" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">開始測驗</a></p>
+          <p style="color: #666;">此邀請連結為一次性使用。</p>
+        `,
+      });
+    } catch (error) {
+      console.error('Failed to send batch invitation email:', error);
+      throw error;
+    }
+  }
+
+  async sendAdminLink(
+    email: string,
+    adminData: {
+      adminName: string;
+      batchName: string;
+      adminUrl: string;
+      takerCount: number;
+    },
+  ): Promise<void> {
+    try {
+      const { adminName, batchName, adminUrl, takerCount } = adminData;
+
+      await this.transporter.sendMail({
+        from: this.configService.get('MAIL_FROM', 'noreply@medical-test.com'),
+        to: email,
+        subject: `群組管理面板 - ${batchName}`,
+        html: `
+          <h2>群組管理面板</h2>
+          <p>您好 ${adminName},</p>
+          <p>您的群組測驗 <strong>${batchName}</strong> 已準備好。</p>
+          <p>批次資訊：</p>
+          <ul>
+            <li>受測者數量：${takerCount} 人</li>
+            <li>批次狀態：已建立</li>
+          </ul>
+          <p>請點擊下方連結訪問管理面板：</p>
+          <p><a href="${adminUrl}" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">進入管理面板</a></p>
+          <p style="color: #666;">在管理面板中，您可以：</p>
+          <ul>
+            <li>查看受測者進度</li>
+            <li>查看實時統計結果</li>
+            <li>管理受測者信息</li>
+          </ul>
+        `,
+      });
+    } catch (error) {
+      console.error('Failed to send admin link email:', error);
+      throw error;
+    }
+  }
 }

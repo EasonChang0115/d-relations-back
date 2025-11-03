@@ -12,6 +12,7 @@ import { QuestionsModule } from './modules/questions/questions.module';
 import { ExamsModule } from './modules/exams/exams.module';
 import { AnswersModule } from './modules/answers/answers.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { GroupsModule } from './modules/groups/groups.module';
 
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
@@ -57,6 +58,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     ExamsModule,
     AnswersModule,
     ReportsModule,
+    GroupsModule,
   ],
   controllers: [AppController],
   providers: [
